@@ -23,12 +23,16 @@ const { useState } = React;
 
 // ─── TASOT ────────────────────────────────────────────────────────────────────
 const LEVELS = [
-  { id:0, name:"Ensitreffit",    emoji:"☕", color:"#FF6B6B", desc:"Kahvitreffit — tehdäänkö toinen kierros?" },
-  { id:1, name:"Seksi",          emoji:"🔥", color:"#FF4500", desc:"Kemiat toimii — uskallatko?" },
-  { id:2, name:"Yhteinen matka", emoji:"✈️", color:"#9B59B6", desc:"Kuukausi kahdestaan — selviääkö?" },
-  { id:3, name:"Yhteenmuutto",   emoji:"🏠", color:"#3498DB", desc:"Yhteinen koti — kuka saa kaukosäätimen?" },
-  { id:4, name:"Asunnon osto",   emoji:"🔑", color:"#27AE60", desc:"Yhteinen laina — vakava sitoumus" },
-  { id:5, name:"Perhe",          emoji:"👶", color:"#F39C12", desc:"Perustatte perheen — onnittelut!" },
+  { id:0, name:"Ensi kohtaaminen",         emoji:"👋", color:"#FF6B6B", desc:"Silmät kohtaavat — jotain erityistä tässä?" },
+  { id:1, name:"Ekat treffit",              emoji:"☕", color:"#FF8C69", desc:"Kahvitreffit — tehdäänkö toinen kierros?" },
+  { id:2, name:"Ensi suudelma",             emoji:"💋", color:"#E83E8C", desc:"Sydän lyö kovaa — uskallatko?" },
+  { id:3, name:"Kutsu kotiin",              emoji:"🚪", color:"#9B59B6", desc:"Ovet avautuvat — mennäänkö sisään?" },
+  { id:4, name:"Ensimmäinen seksi -hetki",  emoji:"🔥", color:"#FF4500", desc:"Kemiat toimii — astutaan seuraavaan askeleeseen" },
+  { id:5, name:"Viikonloppu yhdessä",       emoji:"🛏️", color:"#3498DB", desc:"Ensimmäinen viikonloppu kahdestaan — selviääkö?" },
+  { id:6, name:"Yhteinen lomamatka",        emoji:"✈️", color:"#1ABC9C", desc:"Matka kahdestaan — opitaan tuntemaan toinen" },
+  { id:7, name:"Esittely kavereille",       emoji:"🥳", color:"#27AE60", desc:"Tärkeät ihmiset tutustuvat — miten käy?" },
+  { id:8, name:"Muutto yhteen",             emoji:"🏠", color:"#F39C12", desc:"Yhteinen koti — kuka saa kaukosäätimen?" },
+  { id:9, name:"Perheen perustaminen",      emoji:"👶", color:"#E74C3C", desc:"Perustatte perheen — onnittelut!" },
 ];
 
 const PLAYER_COLORS = ["#FF6B6B","#3498DB","#27AE60","#F39C12"];
@@ -496,9 +500,9 @@ function App() {
     setTimeout(() => speak(`Peli alkaa! ${p[0].name}, sinun vuorosi. Olet tasolla ${LEVELS[0].name}.`), 300);
   }
 
-  // Sukukortti laukeaa kun taso >= 2 (Seksi läpäisty) tai pakolla
+  // Sukukortti laukeaa kun taso >= 4 (Ensimmäinen seksi -hetki läpäisty) tai pakolla
   function shouldDrawFamily(player, forced) {
-    return forced || (player.level >= 2 && Math.random() < 0.3);
+    return forced || (player.level >= 4 && Math.random() < 0.3);
   }
 
   function drawCard() {
@@ -762,7 +766,7 @@ function App() {
             ❌ Hylkää → PALATAAN TASOLLE 0<br/>
             ⚠️ Dealbreaker + hyväksy → TAKAISIN ALKUUN<br/>
             🎲 Yllätyskäänteet sekoittavat kaiken<br/>
-            👨‍👩‍👧 Sukukortit tulevat Seksi-tason jälkeen<br/>
+            👨‍👩‍👧 Sukukortit tulevat ensimmäisen seksi-hetken jälkeen<br/>
             👶 Ensimmäinen perhe voittaa!
           </p>
         </div>

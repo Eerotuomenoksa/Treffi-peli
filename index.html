@@ -398,6 +398,7 @@ function speak(text) {
   if (!window.speechSynthesis) return;
   window.speechSynthesis.cancel();
   const doSpeak = () => {
+    setTimeout(() => {
     const utt = new SpeechSynthesisUtterance(text);
     utt.lang = "fi-FI";
 
@@ -414,6 +415,7 @@ function speak(text) {
     utt.volume = 1.0;
 
     window.speechSynthesis.speak(utt);
+    }, 180);
   };
   if (window.speechSynthesis.getVoices().length > 0) doSpeak();
   else window.speechSynthesis.onvoiceschanged = doSpeak;
@@ -750,7 +752,7 @@ function App() {
           </p>
         </div>
         <div style={{marginTop:"14px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-          <span style={{color:"rgba(255,255,255,0.18)",fontSize:"10px"}}>v1.2</span>
+          <span style={{color:"rgba(255,255,255,0.18)",fontSize:"10px"}}>v1.3</span>
           <button onClick={() => setScreen("credits")} style={{background:"transparent",border:"none",color:"rgba(255,107,107,0.55)",fontSize:"12px",cursor:"pointer",padding:"4px 8px",textDecoration:"underline",textDecorationColor:"rgba(255,107,107,0.3)"}}>
             Credits 💘
           </button>
@@ -778,7 +780,7 @@ function App() {
             ))}
           </div>
         </div>
-        <p style={{color:"rgba(255,255,255,0.15)",fontSize:"10px",marginBottom:"20px"}}>Treffi-peli v1.2</p>
+        <p style={{color:"rgba(255,255,255,0.15)",fontSize:"10px",marginBottom:"20px"}}>Treffi-peli v1.3</p>
         <button onClick={() => setScreen("setup")} style={{padding:"12px 32px",borderRadius:"12px",background:"rgba(255,255,255,0.07)",border:"1px solid rgba(255,255,255,0.15)",color:"rgba(255,255,255,0.5)",fontSize:"14px",fontWeight:"bold",cursor:"pointer"}}>
           ← Takaisin
         </button>
@@ -928,9 +930,6 @@ function App() {
       ) : (
         <div style={{borderRadius:"18px",marginBottom:"13px",overflow:"hidden",border:`2px solid ${cfg.border}`,boxShadow:`0 8px 28px ${cfg.border}25`}}>
           <div style={{background:cfg.bg,padding:"22px 20px",textAlign:"center"}}>
-            <div style={{display:"inline-flex",alignItems:"center",gap:"6px",background:cfg.border,color:"white",fontSize:"11px",padding:"3px 12px",borderRadius:"20px",marginBottom:"14px",fontWeight:"bold"}}>
-              {cfg.label}
-            </div>
             <div style={{fontSize:"52px",marginBottom:"10px"}}>{currentCard.emoji}</div>
             {currentCard.cardType === "family" && (
               <div style={{color:cfg.border,fontSize:"13px",fontWeight:"bold",marginBottom:"6px"}}>
@@ -938,15 +937,6 @@ function App() {
               </div>
             )}
             <p style={{color:"#1a1a2e",fontSize:"18px",fontWeight:"bold",margin:0,lineHeight:"1.4"}}>{currentCard.text}</p>
-            {currentCard.cardType !== "surprise" && (
-              <p style={{color:cfg.textColor,fontSize:"11px",marginTop:"10px",fontWeight:"bold"}}>
-                {currentCard.type==="dealbreaker"
-                  ? "🔥 Hyväksy = nouse taso (riski!) | Hylkää = viisas valinta"
-                  : currentCard.cardType==="family"
-                  ? "✅ Hyväksy = nouse taso | ❌ Hylkää = tippuu yhden tason"
-                  : "✅ Hyväksy = nouse taso | ❌ Hylkää = takaisin tasolle 0"}
-              </p>
-            )}
           </div>
 
           {currentCard.cardType === "surprise" ? (

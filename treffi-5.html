@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>💘 Treffi</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#1a1a2e;font-family:Georgia,serif;min-height:100vh}
+  input,button{font-family:Georgia,serif}
+  button{cursor:pointer}
+  ::-webkit-scrollbar{width:4px}
+  ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.2);border-radius:2px}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+
+// ─── TASOT ────────────────────────────────────────────────────────────────────
+const LEVELS = [
+  { id:0, name:"Ensitreffit",    emoji:"☕", color:"#FF6B6B", desc:"Kahvitreffit — tehdäänkö toinen kierros?" },
+  { id:1, name:"Seksi",          emoji:"🔥", color:"#FF4500", desc:"Kemiat toimii — uskallatko?" },
+  { id:2, name:"Yhteinen matka", emoji:"✈️", color:"#9B59B6", desc:"Kuukausi kahdestaan — selviääkö?" },
+  { id:3, name:"Yhteenmuutto",   emoji:"🏠", color:"#3498DB", desc:"Yhteinen koti — kuka saa kaukosäätimen?" },
+  { id:4, name:"Asunnon osto",   emoji:"🔑", color:"#27AE60", desc:"Yhteinen laina — vakava sitoumus" },
+  { id:5, name:"Perhe",          emoji:"👶", color:"#F39C12", desc:"Perustatte perheen — onnittelut!" },
+];
+
+const PLAYER_COLORS = ["#FF6B6B","#3498DB","#27AE60","#F39C12"];
+
+const TYPE_CONFIG = {
+  positive:    { bg:"#d4edda", border:"#28a745", label:"✨ Positiivinen",    textColor:"#155724" },
+  neutral:     { bg:"#fff3cd", border:"#ffc107", label:"🤔 Haaste",          textColor:"#856404" },
+  dealbreaker: { bg:"#f8d7da", border:"#dc3545", label:"⚠️ Varoitusmerkki", textColor:"#721c24" },
+  surprise:    { bg:"#e8d5f5", border:"#9B59B6", label:"🎲 Yllätyskäänne",  textColor:"#5b2c8d" },
+  family:      { bg:"#fde8c8", border:"#e67e22", label:"👨‍👩‍👧 Sukukortti",     textColor:"#7d4e00" },
+};
+
+// ─── NORMAALIKORTIT ───────────────────────────────────────────────────────────
+const BASE_TRAITS = [
+  {text:"Osaa kokata herkullisesti",type:"positive",emoji:"👨‍🍳"},
+  {text:"On erittäin empaattinen",type:"positive",emoji:"🤗"},
+  {text:"Kuuntelee aidosti",type:"positive",emoji:"👂"},
+  {text:"On humoristinen ja hauska",type:"positive",emoji:"😂"},
+  {text:"Rakastaa eläimiä",type:"positive",emoji:"🐾"},
+  {text:"On taloudellisesti vastuullinen",type:"positive",emoji:"💰"},
+  {text:"Kommunikoi avoimesti tunteistaan",type:"positive",emoji:"💌"},
+  {text:"Tukee sinua unelmissasi",type:"positive",emoji:"⭐"},
+  {text:"On rehellinen aina",type:"positive",emoji:"🤝"},
+  {text:"On rohkea ja seikkailunhaluinen",type:"positive",emoji:"🧗"},
+  {text:"On kärsivällinen ja rauhallinen",type:"positive",emoji:"🕊️"},
+  {text:"Muistaa tärkeät päivämäärät",type:"positive",emoji:"📅"},
+  {text:"Osaa pyytää anteeksi ja tarkoittaa sen",type:"positive",emoji:"🙏"},
+  {text:"On luova ja taiteellinen",type:"positive",emoji:"🎨"},
+  {text:"Pitää sinusta sellaisena kuin olet",type:"positive",emoji:"💜"},
+  {text:"On sosiaalinen ja helppo esitellä ystäville",type:"positive",emoji:"🥳"},
+  {text:"Haluaa kehittyä ihmisenä jatkuvasti",type:"positive",emoji:"📈"},
+  {text:"On kiltti ja kohtelias kaikkia kohtaan",type:"positive",emoji:"😊"},
+  {text:"On kunnianhimoinen mutta tasapainoinen",type:"positive",emoji:"🏆"},
+  {text:"Lukee paljon — on laaja-alainen",type:"positive",emoji:"📚"},
+  {text:"On hyvässä fyysisessä kunnossa",type:"positive",emoji:"💪"},
+  {text:"Tekee arjesta juhlan",type:"positive",emoji:"🌟"},
+  {text:"On lojaali ja uskollinen",type:"positive",emoji:"🛡️"},
+  {text:"On spontaani — keksii yllätyksiä",type:"positive",emoji:"🎁"},
+  {text:"Kunnioittaa rajojasi",type:"positive",emoji:"🚧"},
+  {text:"On hyvä kuuntelija kriisissä",type:"positive",emoji:"🫂"},
+  {text:"Ei pelkää sitoutua",type:"positive",emoji:"💍"},
+  {text:"Arvostaa perhettäsi",type:"positive",emoji:"👨‍👩‍👧"},
+  {text:"On tasapuolinen kotitöissä",type:"positive",emoji:"🧹"},
+  {text:"Osaa ottaa vastaan kritiikkiä",type:"positive",emoji:"🪞"},
+  {text:"On aidosti utelias maailmasta",type:"positive",emoji:"🔭"},
+  {text:"Pitää samanlaisesta elämänrytmistä",type:"positive",emoji:"⏰"},
+  {text:"Osaa nauraa itsellensä",type:"positive",emoji:"🤣"},
+  {text:"On mukava herätä viereen",type:"positive",emoji:"🌅"},
+  {text:"Osaa viettää aikaa hiljaa yhdessä",type:"positive",emoji:"🕯️"},
+  {text:"Arvostaa luontoa ja kestävyyttä",type:"positive",emoji:"🌿"},
+  {text:"On aina puolellasi vaikeissa tilanteissa",type:"positive",emoji:"⚓"},
+  {text:"Jakaa samanlaiset arvot",type:"positive",emoji:"🧭"},
+  {text:"On iloinen ja positiivinen elämänasenne",type:"positive",emoji:"☀️"},
+  {text:"On käytännöllinen ja kätevä kodin kanssa",type:"positive",emoji:"🔧"},
+  {text:"On sopivan itsevarma — ei ylimielinen",type:"positive",emoji:"😎"},
+  {text:"Jakaa kotityöt reilusti",type:"positive",emoji:"🧺"},
+  {text:"On avoin eri kulttuureja kohtaan",type:"positive",emoji:"🌍"},
+  {text:"Osaa sanoa suoraan mitä haluaa",type:"positive",emoji:"💬"},
+  {text:"Tekee pieniä rakkauden tekoja arjessa",type:"positive",emoji:"💐"},
+  {text:"On hyvä tanssija",type:"positive",emoji:"💃"},
+  {text:"Haluaa matkustaa ja kokea uutta",type:"positive",emoji:"🗺️"},
+  {text:"On avoin uusille kokemuksille",type:"positive",emoji:"🚪"},
+  {text:"Pitää sinun ystävistäsi",type:"positive",emoji:"🫶"},
+  {text:"On aina ajoissa",type:"positive",emoji:"⌚"},
+  {text:"Osaa puhua eläintenkieltä",type:"positive",emoji:"🐾"},
+  {text:"Nukkuu myöhään viikonloppuisin",type:"neutral",emoji:"😴"},
+  {text:"On introverttu — tarvitsee yksinaikaansa",type:"neutral",emoji:"🧘"},
+  {text:"Pelaa paljon videopelejä",type:"neutral",emoji:"🎮"},
+  {text:"On erittäin läheiset välit äitiinsä",type:"neutral",emoji:"👩‍👦"},
+  {text:"On allerginen kissoille",type:"neutral",emoji:"🤧"},
+  {text:"Rakastaa täydellistä järjestystä — kaikella paikka",type:"neutral",emoji:"🗂️"},
+  {text:"On täydellinen kaaos kotona",type:"neutral",emoji:"🌪️"},
+  {text:"Ei pidä juhlimisesta lainkaan",type:"neutral",emoji:"🚫"},
+  {text:"On kiireinen uraihminen — töissä usein myöhään",type:"neutral",emoji:"💼"},
+  {text:"On vegaani — ei kompromisseja ruoassa",type:"neutral",emoji:"🥗"},
+  {text:"Ei halua lapsia",type:"neutral",emoji:"🚫👶"},
+  {text:"On todella ujo uusissa tilanteissa",type:"neutral",emoji:"🫣"},
+  {text:"Haluaa asua maaseudulla",type:"neutral",emoji:"🌾"},
+  {text:"Haluaa asua isossa kaupungissa — ei kompromisseja",type:"neutral",emoji:"🏙️"},
+  {text:"On kiihkeä urheilufani — pelit ovat pyhiä",type:"neutral",emoji:"⚽"},
+  {text:"Käy kirkossa säännöllisesti — uskonto on tärkeä",type:"neutral",emoji:"⛪"},
+  {text:"Rakastaa riskejä — sijoittaa aggressiivisesti",type:"neutral",emoji:"📊"},
+  {text:"Nukkuu vain viisi tuntia — energia riittää silti",type:"neutral",emoji:"⚡"},
+  {text:"Herää viisi aamulla ja haluaa että sinäkin heräät",type:"neutral",emoji:"🐓"},
+  {text:"Kuuntelee musiikkia kovaa aina",type:"neutral",emoji:"🔊"},
+  {text:"Käy kuntosalilla joka päivä — se on prioriteetti",type:"neutral",emoji:"🏋️"},
+  {text:"Ei liiku lainkaan — sohvaperuna",type:"neutral",emoji:"🛋️"},
+  {text:"Juhlii kovaa viikonloppuisin",type:"neutral",emoji:"🍺"},
+  {text:"Ei juo lainkaan alkoholia",type:"neutral",emoji:"🚱"},
+  {text:"On ex-puolison kanssa edelleen hyvät välit",type:"neutral",emoji:"👋"},
+  {text:"Omistaa ison koiran joka nukkuu sängyssä",type:"neutral",emoji:"🐻"},
+  {text:"On todella tarkka rahasta — laskee eurot",type:"neutral",emoji:"🧾"},
+  {text:"Puhuu entisistä suhteistaan paljon",type:"neutral",emoji:"💭"},
+  {text:"Ei koskaan puhu tunteistaan",type:"neutral",emoji:"🪨"},
+  {text:"On isoja perhekokoontumisia joka viikonloppu",type:"neutral",emoji:"👨‍👩‍👧‍👦"},
+  {text:"Rakastaa lautapelejä — haluaa pelata aina",type:"neutral",emoji:"♟️"},
+  {text:"On erittäin kilpailuhenkinen — häviäminen ei onnistu",type:"neutral",emoji:"🥇"},
+  {text:"Rakastaa luksusta — haluaa aina parasta",type:"neutral",emoji:"💎"},
+  {text:"On minimalistinen — ei halua omistaa mitään ylimääräistä",type:"neutral",emoji:"⬜"},
+  {text:"Kerää tavaroita — koti on täynnä muistoja",type:"neutral",emoji:"🗄️"},
+  {text:"Rakastaa debatointia — väittelee kaikesta",type:"neutral",emoji:"⚔️"},
+  {text:"Välttelee konflikteja hinnalla millä hyvänsä",type:"neutral",emoji:"🕊️"},
+  {text:"On erittäin aktiivinen somessa",type:"neutral",emoji:"📸"},
+  {text:"Haluaa kolme tai enemmän lasta",type:"neutral",emoji:"👶👶👶"},
+  {text:"Syö ainoastaan pikaruokaa",type:"neutral",emoji:"🍔"},
+  {text:"Pitää kylmistä talviurheilulajeista",type:"neutral",emoji:"⛷️"},
+  {text:"Vihaaa kylmää — haluaa aina aurinkoon",type:"neutral",emoji:"🌴"},
+  {text:"Tekee töitä kotona — raja työn ja vapaa-ajan välillä epäselvä",type:"neutral",emoji:"💻"},
+  {text:"On erittäin sarkastinen — jotkut eivät pidä siitä",type:"neutral",emoji:"🙄"},
+  {text:"On suuri harrastusinto — harrastuksia on kymmeniä",type:"neutral",emoji:"🎯"},
+  {text:"Intohimoinen kalastaja",type:"neutral",emoji:"🎣"},
+  {text:"Osaa kaikki Shakespearen näytelmien vuorosanat",type:"neutral",emoji:"🎭"},
+  {text:"Valehtelee pienistä asioista jatkuvasti",type:"dealbreaker",emoji:"🤥"},
+  {text:"On erittäin mustasukkainen — kontrolloi liikkumistasi",type:"dealbreaker",emoji:"😠"},
+  {text:"Käyttäytyy huonosti tarjoilijoille",type:"dealbreaker",emoji:"😤"},
+  {text:"Räjähtää pienestä — arvaamaton temperamentti",type:"dealbreaker",emoji:"💥"},
+  {text:"On edelleen rakastunut ex-kumppaniinsa",type:"dealbreaker",emoji:"💔"},
+  {text:"Manipuloi sinua hiljaisella kohtelulla",type:"dealbreaker",emoji:"🕸️"},
+  {text:"On rasistinen tai syrjivä",type:"dealbreaker",emoji:"⛔"},
+  {text:"On pettänyt aiemmissa suhteissaan — ja selittelee sitä",type:"dealbreaker",emoji:"🐍"},
+  {text:"Pelaa rahapeleillä pakonomaisesti",type:"dealbreaker",emoji:"🎲"},
+  {text:"Käyttää sinua taloudellisesti hyväksi",type:"dealbreaker",emoji:"🪝"},
+  {text:"On henkisesti julma — nöyryyttää sinua",type:"dealbreaker",emoji:"🔪"},
+  {text:"Puhuu sinusta pahaa muille selän takana",type:"dealbreaker",emoji:"🗣️"},
+  {text:"Ottaa huumeita säännöllisesti",type:"dealbreaker",emoji:"💊"},
+  {text:"Eristää sinut ystävistäsi vähitellen",type:"dealbreaker",emoji:"🕸️"},
+  {text:"On fyysisesti uhkaava riidoissa",type:"dealbreaker",emoji:"🚨"},
+];
+
+// ─── YLLÄTYSKÄÄNTEET ──────────────────────────────────────────────────────────
+const SURPRISE_CARDS = [
+  {
+    id:"love_letter",
+    text:"Rakkauskirje! Suhde etenee salamana — hyppää suoraan seuraavalle tasolle!",
+    emoji:"💌", effect:"level_up_one",
+    desc:"Hyppäät yhden tason eteenpäin.",
+  },
+  {
+    id:"ex_calls",
+    text:"Exä soittaa! Vaihdat paikan edellä olevan pelaajan kanssa.",
+    emoji:"📞", effect:"swap_leader",
+    desc:"Vaihdat tasosi edellä olevan pelaajan kanssa.",
+  },
+  {
+    id:"wedding_budget",
+    text:"Hääbudjetti ylittyi! Kaikki pelaajat tippuvat yhden tason.",
+    emoji:"💸", effect:"all_down",
+    desc:"Kaikki pelaajat tippuvat yhden tason alaspäin.",
+  },
+  {
+    id:"love_wave",
+    text:"Rakkauden aalto! Kaikki pelaajat nousevat yhden tason.",
+    emoji:"🌹", effect:"all_up",
+    desc:"Kaikki pelaajat nousevat yhden tason.",
+  },
+  {
+    id:"eyes_meet",
+    text:"Katseet kohtaavat! Valitset kenen treffit menevät pieleen — valittu pelaaja tippuu tasolle 0.",
+    emoji:"👀", effect:"choose_victim",
+    desc:"Valitset kuka tippuu tasolle 0.",
+  },
+  {
+    id:"date_disaster",
+    text:"Treffikatastrofi! Seuraava pelaaja menettää vuoronsa.",
+    emoji:"🃏", effect:"skip_next",
+    desc:"Seuraava pelaaja menettää vuoron.",
+  },
+  {
+    id:"surprise_pregnancy",
+    text:"Yllätysraskaus! Tapaat suvun heti — sukukortti tulee nyt!",
+    emoji:"🍼", effect:"family_now",
+    desc:"Sukukortti tulee heti riippumatta tasosta.",
+  },
+];
+
+// ─── SUKUKORTIT ───────────────────────────────────────────────────────────────
+const FAMILY_CARDS = [
+  {role:"Kumppanin äiti", text:"Kumppanin äiti soittaa joka päivä ja odottaa vastauksia heti", emoji:"👩‍🦳", type:"neutral"},
+  {role:"Kumppanin äiti", text:"Kumppanin äiti on aidosti lämmin ja ottaa sinut heti omakseen", emoji:"👩‍🦳", type:"positive"},
+  {role:"Kumppanin äiti", text:"Kumppanin äiti kommentoi kaikkea — ruoanlaittoa, pukeutumista, kotia", emoji:"👩‍🦳", type:"neutral"},
+  {role:"Kumppanin äiti", text:"Kumppanin äiti muuttaa viikoksi teille ilman varoitusta", emoji:"👩‍🦳", type:"neutral"},
+  {role:"Kumppanin isä",  text:"Kumppanin isä on hiljaa mutta katsoo sinua epäluuloisesti aina", emoji:"👨‍🦳", type:"neutral"},
+  {role:"Kumppanin isä",  text:"Kumppanin isä rakastaa samoja asioita kuin sinä — tulette toimeen", emoji:"👨‍🦳", type:"positive"},
+  {role:"Kumppanin isä",  text:"Kumppanin isä lainaa rahaa jatkuvasti eikä maksa takaisin", emoji:"👨‍🦳", type:"dealbreaker"},
+  {role:"Kumppanin isä",  text:"Kumppanin isä ei katso sinua silmiin eikä puhu sinulle suoraan", emoji:"👨‍🦳", type:"neutral"},
+  {role:"Kumppanin veli", text:"Kumppanin veli testaa sinut heti ensitapaamisella", emoji:"👦", type:"neutral"},
+  {role:"Kumppanin veli", text:"Kumppanin veli ottaa sinut veljekseen ja puolustaa sinua aina", emoji:"👦", type:"positive"},
+  {role:"Kumppanin veli", text:"Kumppanin veli on kumppanisi ex ja tilanne on kiusallinen", emoji:"👦", type:"neutral"},
+  {role:"Kumppanin veli", text:"Kumppanin veli lainaa autoa kysymättä ja palauttaa tyhjällä tankilla", emoji:"👦", type:"neutral"},
+  {role:"Kumppanin sisko",text:"Kumppanin sisko on kilpailuhenkinen — vertailee kaikkea sinuun", emoji:"👧", type:"neutral"},
+  {role:"Kumppanin sisko",text:"Kumppanin sisko ottaa sinut siskokseen heti ensitapaamisella", emoji:"👧", type:"positive"},
+  {role:"Kumppanin sisko",text:"Kumppanin sisko kertoo äidille kaiken mitä sanot", emoji:"👧", type:"neutral"},
+  {role:"Kumppanin sisko",text:"Kumppanin sisko ihannoi sinua ja on aina lähellä", emoji:"👧", type:"neutral"},
+  {role:"Kumppanin mummo",text:"Kumppanin mummo kysyy joka tapaamisella milloin lapsia tulee", emoji:"👵", type:"neutral"},
+  {role:"Kumppanin mummo",text:"Kumppanin mummo on perheen sydän — hänen luokseen on aina kiva mennä", emoji:"👵", type:"positive"},
+  {role:"Kumppanin mummo",text:"Kumppanin mummo ei hyväksy sinua — ilmaisee sen selvästi", emoji:"👵", type:"dealbreaker"},
+  {role:"Kumppanin vaari",text:"Kumppanin vaari kertoo samoja sotajuttuja joka juhlassa", emoji:"👴", type:"neutral"},
+  {role:"Kumppanin vaari",text:"Kumppanin vaari antaa aina viisaita neuvoja oikeaan aikaan", emoji:"👴", type:"positive"},
+  {role:"Kumppanin vaari",text:"Kumppanin vaari on rasistinen eikä yritä piilotella sitä", emoji:"👴", type:"dealbreaker"},
+  {role:"Kumppanin täti", text:"Kumppanin täti antaa neuvomattomia neuvoja parisuhteestasi", emoji:"👩‍🦱", type:"neutral"},
+  {role:"Kumppanin täti", text:"Kumppanin täti muistaa jokaisen syntymäpäiväsi ja juhlistaa sinua", emoji:"👩‍🦱", type:"positive"},
+  {role:"Kumppanin täti", text:"Kumppanin täti kysyy suoraan palkkasi ja vuokrasi", emoji:"👩‍🦱", type:"neutral"},
+  {role:"Kumppanin setä", text:"Kumppanin setä on poliittisesti eri mieltä kaikesta kanssasi", emoji:"👨‍🦱", type:"neutral"},
+  {role:"Kumppanin setä", text:"Kumppanin setä on menestynyt ja tarjoaa aina koko suvulle", emoji:"👨‍🦱", type:"positive"},
+  {role:"Kumppanin setä", text:"Kumppanin setä juo liikaa perhejuhlissa ja tekee tilanteista kiusallisia", emoji:"👨‍🦱", type:"neutral"},
+  {role:"Kumppanin serkku",text:"Kumppanin serkku on ihostunut sinuun — se näkyy liian selvästi", emoji:"🧑", type:"neutral"},
+  {role:"Kumppanin serkku",text:"Kumppanin serkku on paras juhlakaveri — kemiat toimivat", emoji:"🧑", type:"positive"},
+  {role:"Kumppanin serkku",text:"Kumppanin serkku kertoo kaikille suvulle mitä kuulee sinusta", emoji:"🧑", type:"neutral"},
+  {role:"Perheen koira",  text:"Perheen koira ei pidä sinusta — murjottaa joka kerta", emoji:"🐕", type:"neutral"},
+  {role:"Perheen koira",  text:"Perheen koira rakastuu sinuun ensimmäisellä kerralla", emoji:"🐕", type:"positive"},
+  {role:"Perheen kissa",  text:"Perheen kissa ignoroi sinut täydellisesti — ikuisesti", emoji:"🐱", type:"neutral"},
+  {role:"Kumppanin paras kaveri",text:"Kumppanin paras kaveri ei pidä sinusta eikä piilottele sitä", emoji:"😤", type:"neutral"},
+  {role:"Kumppanin paras kaveri",text:"Kumppanin paras kaveri ottaa sinut heti joukkoon", emoji:"😄", type:"positive"},
+  {role:"Kumppanin paras kaveri",text:"Kumppanin paras kaveri on selvästi ihastunut kumppaniisi", emoji:"😏", type:"neutral"},
+  {role:"Kumppanin ex",   text:"Kumppanin ex on edelleen hyvä ystävä — tapaavat kahden kesken", emoji:"😬", type:"neutral"},
+  {role:"Kumppanin ex",   text:"Kumppanin ex lähettää viestejä yöllä — kumppanisi vastaa", emoji:"😬", type:"dealbreaker"},
+  {role:"Kumppanin pikkuveli",text:"Kumppanin pikkuveli kopioi kaiken mitä kumppanisi tekee — se on söpöä", emoji:"👦", type:"positive"},
+  {role:"Kumppanin pikkuveli",text:"Kumppanin pikkuveli lainaa rahaa sinulta heti kun sinut tapaa", emoji:"👦", type:"neutral"},
+  {role:"Perheen mökki",  text:"Perheellä on mökki jonne odotetaan tulevan joka kesä — pakollinen", emoji:"🏕️", type:"neutral"},
+  {role:"Perheen mökki",  text:"Perheellä on ihana mökki — sinulle annetaan oma avain heti", emoji:"🏕️", type:"positive"},
+  {role:"Suvun perinne",  text:"Suvulla on jouluperinne joka kestää kolme päivää — pakollinen", emoji:"🎄", type:"neutral"},
+  {role:"Suvun salaisuus",text:"Suvulla on iso salaisuus jonka kaikki tietävät mutta ei puhuta ääneen", emoji:"🤫", type:"neutral"},
+  {role:"Kumppanin äiti", text:"Kumppanin äiti haluaa tietää missä olette joka viikonloppu", emoji:"👩‍🦳", type:"neutral"},
+  {role:"Kumppanin isä",  text:"Kumppanin isä testaa sinut heti — kysyy suunnitelmistasi elämässä", emoji:"👨‍🦳", type:"neutral"},
+  {role:"Kumppanin veli", text:"Kumppanin veli haluaa aina tulla kolmanneksi pyöräksi teidän treffeille", emoji:"👦", type:"neutral"},
+  {role:"Kumppanin sisko",text:"Kumppanin sisko on paras liittolaisesi koko perheessä", emoji:"👧", type:"positive"},
+  {role:"Kumppanin äiti", text:"Kumppanin äiti on jo suunnitellut hääteidenne yksityiskohdat", emoji:"👩‍🦳", type:"neutral"},
+];
+
+// ─── APUFUNKTIOT─────────────────────────────────────────────
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// Convert 3rd person card text to 1st person for partner voice
+function toFirstPerson(text) {
+  return text
+    .replace(/^On erittäin /i,   "Olen erittäin ")
+    .replace(/^On hyvä /i,       "Olen hyvä ")
+    .replace(/^On hyvässä /i,    "Olen hyvässä ")
+    .replace(/^On kärsivällinen/i,"Olen kärsivällinen")
+    .replace(/^On kiltti/i,      "Olen kiltti")
+    .replace(/^On kiireinen/i,   "Olen kiireinen")
+    .replace(/^On kunnianhimoinen/i,"Olen kunnianhimoinen")
+    .replace(/^On lojaali/i,     "Olen lojaali")
+    .replace(/^On luova/i,       "Olen luova")
+    .replace(/^On mukava/i,      "Olen mukava")
+    .replace(/^On narsistinen/i, "Olen narsistinen")
+    .replace(/^On rehellinen/i,  "Olen rehellinen")
+    .replace(/^On rohkea/i,      "Olen rohkea")
+    .replace(/^On sosiaalinen/i, "Olen sosiaalinen")
+    .replace(/^On sopivan/i,     "Olen sopivan")
+    .replace(/^On spontaani/i,   "Olen spontaani")
+    .replace(/^On taloudellisesti/i,"Olen taloudellisesti")
+    .replace(/^On todella/i,     "Olen todella")
+    .replace(/^On täydellinen/i, "Olen täydellinen")
+    .replace(/^On vegaani/i,     "Olen vegaani")
+    .replace(/^On introverttu/i, "Olen introverttu")
+    .replace(/^On allerginen/i,  "Olen allerginen")
+    .replace(/^On addiktoitunut/i,"Olen addiktoitunut")
+    .replace(/^On avoin/i,       "Olen avoin")
+    .replace(/^On aidosti/i,     "Olen aidosti")
+    .replace(/^On aggressiivinen/i,"Olen aggressiivinen")
+    .replace(/^On ex/i,          "Olen ex")
+    .replace(/^On fyysisesti/i,  "Olen fyysisesti")
+    .replace(/^On henkisesti/i,  "Olen henkisesti")
+    .replace(/^On iloinen/i,     "Olen iloinen")
+    .replace(/^On kiihkeä/i,     "Olen kiihkeä")
+    .replace(/^On kateellinen/i, "Olen kateellinen")
+    .replace(/^On käytännöllinen/i,"Olen käytännöllinen")
+    .replace(/^On minimalistinen/i,"Olen minimalistinen")
+    .replace(/^On pettänyt/i,    "Olen pettänyt")
+    .replace(/^On poliittisesti/i,"Olen poliittisesti")
+    .replace(/^On rasistinen/i,  "Olen rasistinen")
+    .replace(/^On seksuaalisesti/i,"Olen seksuaalisesti")
+    .replace(/^On sensitiivinen/i,"Olen sensitiivinen")
+    .replace(/^On sarkastinen/i, "Olen sarkastinen")
+    .replace(/^On terve/i,       "Olen terve")
+    .replace(/^On totaalinen/i,  "Olen totaalinen")
+    .replace(/^On ujo/i,         "Olen ujo")
+    .replace(/^On yksityisyyden/i,"Olen yksityisyyden")
+    .replace(/^On yötyhmä/i,     "Olen yötyhmä")
+    .replace(/^On edelleen/i,    "Olen edelleen")
+    .replace(/^On täysin/i,      "Olen täysin")
+    .replace(/^On aina/i,        "Olen aina")
+    .replace(/^On /i,            "Olen ")
+    .replace(/^Ei halua/i,       "En halua")
+    .replace(/^Ei pidä/i,        "En pidä")
+    .replace(/^Ei katso/i,       "En katso")
+    .replace(/^Ei koskaan/i,     "En koskaan")
+    .replace(/^Ei juo/i,         "En juo")
+    .replace(/^Ei liiku/i,       "En liiku")
+    .replace(/^Ei omista/i,      "En omista")
+    .replace(/^Ei usko/i,        "En usko")
+    .replace(/^Ei välitä/i,      "En välitä")
+    .replace(/^Ei /i,            "En ")
+    .replace(/^Osaa /i,          "Osaan ")
+    .replace(/^Pelaa /i,         "Pelaan ")
+    .replace(/^Puhuu /i,         "Puhun ")
+    .replace(/^Rakastaa /i,      "Rakastan ")
+    .replace(/^Haluaa /i,        "Haluan ")
+    .replace(/^Käy /i,           "Käyn ")
+    .replace(/^Käyttää /i,       "Käytän ")
+    .replace(/^Käyttäytyy /i,    "Käyttäydyn ")
+    .replace(/^Kerää /i,         "Kerään ")
+    .replace(/^Kuuntelee /i,     "Kuuntelen ")
+    .replace(/^Lähettää /i,      "Lähetän ")
+    .replace(/^Lukee /i,         "Luen ")
+    .replace(/^Muistaa /i,       "Muistan ")
+    .replace(/^Muuttaa /i,       "Muutan ")
+    .replace(/^Nukkuu /i,        "Nukun ")
+    .replace(/^Omistaa /i,       "Omistan ")
+    .replace(/^Ottaa /i,         "Otan ")
+    .replace(/^Pitää /i,         "Pidän ")
+    .replace(/^Pyörtää /i,       "Pyörrän ")
+    .replace(/^Räjähtää /i,      "Räjähdän ")
+    .replace(/^Syö /i,           "Syön ")
+    .replace(/^Syyttää /i,       "Syytän ")
+    .replace(/^Tekee /i,         "Teen ")
+    .replace(/^Tarvitsee /i,     "Tarvitsen ")
+    .replace(/^Tukee /i,         "Tuen ")
+    .replace(/^Välttelee /i,     "Vältelen ")
+    .replace(/^Valehtelee /i,    "Valehtelen ")
+    .replace(/^Herää /i,         "Herään ")
+    .replace(/^Hermostuu /i,     "Hermostun ")
+    .replace(/^Jakaa /i,         "Jaan ")
+    .replace(/^Juhlii /i,        "Juhlii ")
+    .replace(/^Kunnioittaa /i,   "Kunnioitan ")
+    .replace(/^Kommunikoi /i,    "Kommunikoin ")
+    .replace(/^Kannustaa /i,     "Kannustan ")
+    .replace(/^Arvostaa /i,      "Arvostan ")
+    .replace(/^Eristää /i,       "Eristän ")
+    .replace(/^Halveksii /i,     "Halveksin ");
+}
+
+// Finnish female name endings and common names for gender detection
+const FEMALE_NAMES = ["anna","maria","sofia","emma","julia","laura","sara","emilia","aino","helmi",
+  "elina","katja","liisa","hanna","erika","tuulia","siiri","veera","viola","aurora","isla","luna",
+  "ida","ines","ilona","inkeri","iida","kaisa","kaarina","kristiina","leena","minna","niina","oona",
+  "paula","petra","piia","riitta","riikka","sanna","sari","satu","suvi","tarja","tiina","tuija",
+  "ulla","virpi","anne","jenni","johanna","maija","mervi","mirja","nina","pirjo","raija","terttu"];
+
+const FEMALE_ENDINGS = ["a","ä","ia","iä","na","nä","la","lä","ra","rä","ta","tä","ina","inä"];
+
+function guessFemale(name) {
+  const n = name.trim().toLowerCase().split(" ")[0];
+  if (FEMALE_NAMES.includes(n)) return true;
+  // Heuristic: common Finnish female endings
+  return FEMALE_ENDINGS.some(e => n.endsWith(e) && n.length > 3);
+}
+
+// Pick best voice: wantFemale = desired gender of the VOICE (opposite of player)
+function pickVoice(voices, wantFemale) {
+  const fi = voices.filter(v => v.lang && v.lang.startsWith("fi"));
+  const pool = fi.length > 0 ? fi : voices;
+
+  // Voice name keywords
+  const femaleKeys = ["satu","anna","female","woman","girl","fiona","karen","samantha","amelie","monica"];
+  const maleKeys   = ["mikko","male","man","guy","daniel","alex","jorge","diego","thomas","pierre"];
+
+  const keys = wantFemale ? femaleKeys : maleKeys;
+  const found = pool.find(v => keys.some(k => v.name.toLowerCase().includes(k)));
+  if (found) return found;
+
+  // Fallback: if multiple fi voices, alternate
+  if (pool.length >= 2) return wantFemale ? pool[0] : pool[1];
+  return pool[0] || null;
+}
+
+// Global: which player is currently active (set before speak calls)
+let _currentPlayerName = "";
+
+function setCurrentSpeaker(name) { _currentPlayerName = name; }
+
+function speak(text) {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const doSpeak = () => {
+    const utt = new SpeechSynthesisUtterance(text);
+    utt.lang = "fi-FI";
+
+    const voices = window.speechSynthesis.getVoices();
+    // Player is female → want male voice (partner), and vice versa
+    const playerIsFemale = guessFemale(_currentPlayerName);
+    const wantFemale = !playerIsFemale; // partner is opposite gender
+    const voice = pickVoice(voices, wantFemale);
+    if (voice) utt.voice = voice;
+
+    // Miellyttävä ääni: rauhallinen tempo, luonnollinen pitch
+    utt.rate  = 0.88;
+    utt.pitch = wantFemale ? 1.15 : 0.92; // nainen hieman korkeampi, mies matalampi
+    utt.volume = 1.0;
+
+    window.speechSynthesis.speak(utt);
+  };
+  if (window.speechSynthesis.getVoices().length > 0) doSpeak();
+  else window.speechSynthesis.onvoiceschanged = doSpeak;
+}
+
+function buildDeck() {
+  // Surprise cards: 2 copies each mixed in
+  const surprises = SURPRISE_CARDS.map(s => ({...s, cardType:"surprise"}));
+  return shuffle([...BASE_TRAITS, ...BASE_TRAITS, ...surprises, ...surprises]);
+}
+
+function buildFamilyDeck() {
+  return shuffle([...FAMILY_CARDS, ...FAMILY_CARDS]);
+}
+
+// ─── APP ──────────────────────────────────────────────────────────────────────
+function App() {
+  const getSaved = () => {
+    try { const s = localStorage.getItem("treffi_names"); return s ? JSON.parse(s) : ["Pelaaja 1","Pelaaja 2","Pelaaja 3","Pelaaja 4"]; }
+    catch { return ["Pelaaja 1","Pelaaja 2","Pelaaja 3","Pelaaja 4"]; }
+  };
+
+  const [screen, setScreen]               = useState("setup");
+  const [playerCount, setPlayerCount]     = useState(2);
+  const [playerNames, setPlayerNames]     = useState(getSaved);
+  const [players, setPlayers]             = useState([]);
+  const [currentPlayer, setCurrentPlayer] = useState(0);
+  const [deck, setDeck]                   = useState([]);
+  const [familyDeck, setFamilyDeck]       = useState([]);
+  const [currentCard, setCurrentCard]     = useState(null);
+  const [log, setLog]                     = useState([]);
+  const [winner, setWinner]               = useState(null);
+  const [decisionMade, setDecisionMade]   = useState(null);
+  const [overlay, setOverlay]             = useState(null); // {type, ...}
+  const [skipNext, setSkipNext]           = useState(false);
+  const [chooseVictim, setChooseVictim]   = useState(false);
+  const [pendingFamilyCard, setPendingFamilyCard] = useState(false);
+
+  function goToSetup() {
+    window.speechSynthesis && window.speechSynthesis.cancel();
+    setScreen("setup"); setPlayers([]); setDeck([]); setFamilyDeck([]);
+    setCurrentCard(null); setLog([]); setWinner(null); setDecisionMade(null);
+    setOverlay(null); setSkipNext(false); setChooseVictim(false); setPendingFamilyCard(false);
+  }
+
+  function launchGame() {
+    try { localStorage.setItem("treffi_names", JSON.stringify(playerNames)); } catch {}
+    const newPlayers = Array.from({length: playerCount}, (_,i) => ({
+      name: playerNames[i] || `Pelaaja ${i+1}`,
+      level: 0, color: PLAYER_COLORS[i], skipped: false,
+    }));
+    setPlayers(newPlayers);
+    setDeck(buildDeck());
+    setFamilyDeck(buildFamilyDeck());
+    setCurrentPlayer(0); setCurrentCard(null); setLog([]); setWinner(null);
+    setDecisionMade(null); setOverlay(null); setSkipNext(false);
+    setChooseVictim(false); setPendingFamilyCard(false);
+    setScreen("game");
+    setTimeout(() => speak(`Peli alkaa! ${newPlayers[0].name}, sinun vuorosi. Olet tasolla ${LEVELS[0].name}.`), 300);
+  }
+
+  // Sukukortti laukeaa kun taso >= 2 (Seksi läpäisty) tai pakolla
+  function shouldDrawFamily(player, forced) {
+    return forced || (player.level >= 2 && Math.random() < 0.3);
+  }
+
+  function drawCard() {
+    if (currentCard) return;
+    const cp = players[currentPlayer];
+
+    // Sukukortti?
+    if (shouldDrawFamily(cp, pendingFamilyCard)) {
+      setPendingFamilyCard(false);
+      let fd = familyDeck;
+      if (fd.length < 3) fd = buildFamilyDeck();
+      const [card, ...rest] = fd;
+      setFamilyDeck(rest);
+      setCurrentCard({...card, cardType:"family"});
+      setCurrentSpeaker(players[currentPlayer]?.name || '');
+      speak(`Sukukortti! Kumppanin ${card.role.replace('Kumppanin ','').replace('Perheen ','perheen ').replace('Suvun ','suvun ')}. ${card.text}`);
+      setDecisionMade(null);
+      return;
+    }
+
+    let d = deck;
+    if (d.length < 5) d = buildDeck();
+    const [card, ...rest] = d;
+    setDeck(rest);
+    setCurrentCard(card);
+    setDecisionMade(null);
+
+    if (card.cardType === "surprise") {
+      setCurrentSpeaker(players[currentPlayer]?.name || '');
+      speak(`Yllätyskäänne! ${card.text}`);
+    } else {
+      setCurrentSpeaker(players[currentPlayer]?.name || '');
+    speak(`Olen ${toFirstPerson(card.text).charAt(0).toLowerCase() + toFirstPerson(card.text).slice(1)}`);
+    }
+  }
+
+  function advanceTurn(updatedPlayers, nextIdx) {
+    const p = updatedPlayers || players;
+    const ni = nextIdx !== undefined ? nextIdx : (currentPlayer + 1) % playerCount;
+    setCurrentCard(null); setDecisionMade(null); setChooseVictim(false);
+
+    // Check skip
+    if (p[ni] && p[ni].skipped) {
+      const cleared = p.map((pl, i) => i === ni ? {...pl, skipped: false} : pl);
+      setPlayers(cleared);
+      speak(`${p[ni].name} menettää vuoronsa!`);
+      const nextNext = (ni + 1) % playerCount;
+      setTimeout(() => {
+        setCurrentPlayer(nextNext);
+        speak(`${cleared[nextNext].name}! Sinun vuorosi. Olet tasolla ${LEVELS[cleared[nextNext].level].name}.`);
+      }, 1500);
+    } else {
+      setCurrentPlayer(ni);
+      if (p[ni]) { setCurrentSpeaker(p[ni].name); speak(`${p[ni].name}! Sinun vuorosi. Olet tasolla ${LEVELS[p[ni].level].name}.`); }
+    }
+  }
+
+  function checkWin(p) {
+    return p.find(pl => pl.level >= LEVELS.length - 1);
+  }
+
+  function applyNormalDecision(accept, card, p, cpIdx) {
+    const cp = {...p[cpIdx]};
+    let msg = "";
+    let doReset = false;
+    let doAdvance = false;
+
+    const isFamily = card.cardType === "family";
+
+    if (accept) {
+      // Dealbreaker: hyväksyminen nostaa tason (riskin ottaminen)
+      if (cp.level < LEVELS.length - 1) {
+        doAdvance = true;
+        cp.level += 1;
+        msg = `🎉 ${cp.name} → ${LEVELS[cp.level].name}!`;
+      }
+    } else {
+      if (card.type === "dealbreaker") {
+        msg = `👍 ${cp.name} hylkäsi dealbreakerin viisaasti!`;
+      } else if (isFamily) {
+        // Sukukortin hylkääminen: taso tippuu yhdellä
+        if (cp.level > 0) {
+          cp.level -= 1;
+          msg = `👨‍👩‍👧 ${cp.name} hylkäsi suvun — taso tippuu yhden!`;
+          speak(`${cp.name} hylkäsi suvun. Taso tippuu yhden.`);
+        } else {
+          msg = `👨‍👩‍👧 ${cp.name} hylkäsi suvun — ei voi tippua alemmas!`;
+        }
+        doReset = false;
+      } else {
+        doReset = true;
+        msg = `💔 ${cp.name} hylkäsi — palataan alkuun!`;
+        setCurrentSpeaker(cp.name); speak(`${cp.name} palaa alkuun!`);
+      }
+    }
+
+    if (doReset) cp.level = 0;
+    p[cpIdx] = cp;
+
+    const w = checkWin(p);
+    if (w) {
+      setPlayers([...p]); setWinner(w);
+      setDecisionMade(accept ? "accept" : "reject");
+      setLog(prev => [msg, ...prev].slice(0,10));
+      speak(`${w.name} voitti! Perhe on perustettu!`);
+      setTimeout(() => setScreen("win"), 1800);
+      return;
+    }
+
+    setPlayers([...p]);
+    setDecisionMade(accept ? "accept" : "reject");
+    setLog(prev => [msg, ...prev].slice(0,10));
+
+    if (doAdvance) {
+      setCurrentSpeaker(cp.name); speak(`${cp.name} etenee tasolle ${LEVELS[cp.level].name}!`);
+      setOverlay({type:"levelup", playerName:cp.name, levelName:LEVELS[cp.level].name, emoji:LEVELS[cp.level].emoji});
+      setTimeout(() => { setOverlay(null); advanceTurn([...p]); }, 2500);
+    } else if (doReset) {
+      setOverlay({type:"reset", playerName:cp.name});
+      setTimeout(() => { setOverlay(null); advanceTurn([...p]); }, 2200);
+    } else if (card.cardType === "family" && !accept && card.type !== "dealbreaker") {
+      setOverlay({type:"familydown", playerName:cp.name, levelName:LEVELS[cp.level].name});
+      setTimeout(() => { setOverlay(null); advanceTurn([...p]); }, 2200);
+    } else {
+      setTimeout(() => advanceTurn([...p]), 1200);
+    }
+  }
+
+  function applySurprise(card, p, cpIdx) {
+    const effect = card.effect;
+    let msg = "";
+
+    if (effect === "level_up_one") {
+      const cp = {...p[cpIdx]};
+      if (cp.level < LEVELS.length - 1) { cp.level += 1; }
+      p[cpIdx] = cp;
+      msg = `💌 ${cp.name} hyppää tasolle ${LEVELS[cp.level].name}!`;
+      speak(msg);
+      const w = checkWin(p);
+      if (w) { setPlayers([...p]); setWinner(w); speak(`${w.name} voitti!`); setTimeout(() => setScreen("win"), 1800); return; }
+      setPlayers([...p]); setLog(prev => [msg, ...prev].slice(0,10));
+      setOverlay({type:"levelup", playerName:p[cpIdx].name, levelName:LEVELS[p[cpIdx].level].name, emoji:LEVELS[p[cpIdx].level].emoji});
+      setTimeout(() => { setOverlay(null); advanceTurn([...p]); }, 2500);
+
+    } else if (effect === "swap_leader") {
+      // Find player with highest level ahead
+      let leader = -1, maxLv = -1;
+      p.forEach((pl, i) => { if (i !== cpIdx && pl.level > maxLv) { maxLv = pl.level; leader = i; }});
+      if (leader >= 0 && p[leader].level > p[cpIdx].level) {
+        const tmp = p[cpIdx].level;
+        p[cpIdx] = {...p[cpIdx], level: p[leader].level};
+        p[leader] = {...p[leader], level: tmp};
+        msg = `📞 ${p[cpIdx].name} ja ${p[leader].name} vaihtavat tasot!`;
+      } else {
+        msg = `📞 Exä soitti mutta ketään ei ollut edellä!`;
+      }
+      speak(msg);
+      setPlayers([...p]); setLog(prev => [msg, ...prev].slice(0,10));
+      setDecisionMade("accept");
+      setTimeout(() => advanceTurn([...p]), 2000);
+
+    } else if (effect === "all_down") {
+      p = p.map(pl => ({...pl, level: Math.max(0, pl.level - 1)}));
+      msg = `💸 Hääbudjetti! Kaikki tippuvat yhden tason!`;
+      speak(msg);
+      setPlayers([...p]); setLog(prev => [msg, ...prev].slice(0,10));
+      setOverlay({type:"alldown"});
+      setTimeout(() => { setOverlay(null); advanceTurn([...p]); }, 2200);
+
+    } else if (effect === "all_up") {
+      p = p.map(pl => ({...pl, level: Math.min(LEVELS.length - 2, pl.level + 1)}));
+      msg = `🌹 Rakkauden aalto! Kaikki nousevat yhden tason!`;
+      speak(msg);
+      const w = checkWin(p);
+      setPlayers([...p]); setLog(prev => [msg, ...prev].slice(0,10));
+      if (w) { setWinner(w); setTimeout(() => setScreen("win"), 1800); return; }
+      setOverlay({type:"allup"});
+      setTimeout(() => { setOverlay(null); advanceTurn([...p]); }, 2200);
+
+    } else if (effect === "choose_victim") {
+      msg = `👀 Katseet kohtaavat! ${p[cpIdx].name} valitsee uhrin!`;
+      speak(`${p[cpIdx].name}, valitse kenen treffit menevät pieleen!`);
+      setPlayers([...p]); setLog(prev => [msg, ...prev].slice(0,10));
+      setDecisionMade("accept");
+      setChooseVictim(true);
+
+    } else if (effect === "skip_next") {
+      const ni = (cpIdx + 1) % playerCount;
+      p[ni] = {...p[ni], skipped: true};
+      msg = `🃏 Treffikatastrofi! ${p[ni].name} menettää seuraavan vuoronsa!`;
+      speak(msg);
+      setPlayers([...p]); setLog(prev => [msg, ...prev].slice(0,10));
+      setDecisionMade("accept");
+      setTimeout(() => advanceTurn([...p]), 1500);
+
+    } else if (effect === "family_now") {
+      msg = `🍼 Yllätysraskaus! Sukukortti tulee heti!`;
+      speak(msg);
+      setPlayers([...p]); setLog(prev => [msg, ...prev].slice(0,10));
+      setPendingFamilyCard(true);
+      setDecisionMade("accept");
+      setTimeout(() => { setCurrentCard(null); setDecisionMade(null); }, 1800);
+    }
+  }
+
+  function makeDecision(accept) {
+    if (!currentCard || decisionMade) return;
+    const p = [...players];
+
+    if (currentCard.cardType === "surprise") {
+      setDecisionMade("accept");
+      applySurprise(currentCard, p, currentPlayer);
+      return;
+    }
+
+    applyNormalDecision(accept, currentCard, p, currentPlayer);
+  }
+
+  function pickVictim(victimIdx) {
+    const p = [...players];
+    p[victimIdx] = {...p[victimIdx], level: 0};
+    speak(`${p[victimIdx].name} palaa alkuun!`);
+    setPlayers(p);
+    setChooseVictim(false);
+    setOverlay({type:"reset", playerName:p[victimIdx].name});
+    setTimeout(() => { setOverlay(null); advanceTurn(p); }, 2000);
+  }
+
+  const cp    = players[currentPlayer] || {};
+  const level = cp.level !== undefined ? LEVELS[cp.level] : LEVELS[0];
+
+  // ── SETUP ────────────────────────────────────────────────────────────────────
+  if (screen === "setup") return (
+    <div style={{minHeight:"100vh",background:"linear-gradient(135deg,#1a1a2e,#16213e,#0f3460)",display:"flex",alignItems:"center",justifyContent:"center",padding:"20px"}}>
+      <div style={{background:"rgba(255,255,255,0.05)",backdropFilter:"blur(20px)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"24px",padding:"36px",maxWidth:"440px",width:"100%",textAlign:"center"}}>
+        <div style={{fontSize:"60px",marginBottom:"4px"}}>💘</div>
+        <h1 style={{color:"#FF6B6B",fontSize:"48px",fontWeight:"900",margin:"0 0 4px",letterSpacing:"-3px"}}>TREFFI</h1>
+        <p style={{color:"rgba(255,255,255,0.35)",fontSize:"12px",marginBottom:"28px"}}>Rakkaus on uhkapeliä. Oletko valmis?</p>
+        <p style={{color:"rgba(255,255,255,0.6)",marginBottom:"10px",fontSize:"13px"}}>Pelaajien määrä</p>
+        <div style={{display:"flex",gap:"8px",justifyContent:"center",marginBottom:"20px"}}>
+          {[2,3,4].map(n => (
+            <button key={n} onClick={() => setPlayerCount(n)} style={{width:"52px",height:"52px",borderRadius:"12px",border:playerCount===n?"2px solid #FF6B6B":"2px solid rgba(255,255,255,0.12)",background:playerCount===n?"rgba(255,107,107,0.18)":"transparent",color:playerCount===n?"#FF6B6B":"rgba(255,255,255,0.35)",fontSize:"20px",fontWeight:"bold",transition:"all 0.2s"}}>{n}</button>
+          ))}
+        </div>
+        <div style={{marginBottom:"24px"}}>
+          {Array.from({length:playerCount},(_,i) => (
+            <input key={i} value={playerNames[i]} onChange={e=>{const n=[...playerNames];n[i]=e.target.value;setPlayerNames(n);}}
+              placeholder={`Pelaaja ${i+1}`}
+              style={{display:"block",width:"100%",marginBottom:"10px",padding:"12px 16px",borderRadius:"12px",border:`2px solid ${PLAYER_COLORS[i]}35`,background:"rgba(255,255,255,0.04)",color:PLAYER_COLORS[i],fontSize:"15px",outline:"none"}}
+            />
+          ))}
+        </div>
+        <button onClick={launchGame} style={{width:"100%",padding:"15px",borderRadius:"14px",background:"linear-gradient(135deg,#FF6B6B,#FF4500)",border:"none",color:"white",fontSize:"17px",fontWeight:"bold"}}>
+          ALOITA PELI 💘
+        </button>
+        <div style={{marginTop:"18px",background:"rgba(255,255,255,0.03)",borderRadius:"12px",padding:"14px",textAlign:"left"}}>
+          <p style={{color:"rgba(255,255,255,0.35)",fontSize:"11px",lineHeight:"2"}}>
+            <strong style={{color:"rgba(255,255,255,0.55)"}}>Säännöt:</strong><br/>
+            🃏 Nosta kortti → hyväksy tai hylkää<br/>
+            ✅ Hyväksy → nouse seuraavalle tasolle<br/>
+            ❌ Hylkää → PALATAAN TASOLLE 0<br/>
+            ⚠️ Dealbreaker + hyväksy → TAKAISIN ALKUUN<br/>
+            🎲 Yllätyskäänteet sekoittavat kaiken<br/>
+            👨‍👩‍👧 Sukukortit tulevat Seksi-tason jälkeen<br/>
+            👶 Ensimmäinen perhe voittaa!
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+
+  // ── WIN ──────────────────────────────────────────────────────────────────────
+  if (screen === "win") return (
+    <div style={{minHeight:"100vh",background:"linear-gradient(135deg,#f9c74f,#f8961e,#f3722c)",display:"flex",alignItems:"center",justifyContent:"center",textAlign:"center",padding:"20px"}}>
+      <div>
+        <div style={{fontSize:"80px",marginBottom:"12px"}}>👨‍👩‍👧‍👦</div>
+        <h1 style={{color:"white",fontSize:"52px",margin:"0 0 6px",fontWeight:"900",letterSpacing:"-2px"}}>{winner?.name}</h1>
+        <h2 style={{color:"rgba(255,255,255,0.88)",fontSize:"20px",fontWeight:"normal",margin:"0 0 28px"}}>perusti perheen! 🎉</h2>
+        <button onClick={goToSetup} style={{padding:"15px 44px",borderRadius:"14px",background:"white",border:"none",color:"#f3722c",fontSize:"18px",fontWeight:"bold"}}>
+          PELAA UUDELLEEN 🔄
+        </button>
+      </div>
+    </div>
+  );
+
+  // ── GAME ─────────────────────────────────────────────────────────────────────
+  const cfg = currentCard ? (TYPE_CONFIG[currentCard.cardType === "surprise" ? "surprise" : currentCard.cardType === "family" ? "family" : currentCard.type] || TYPE_CONFIG.neutral) : null;
+
+  return (
+    <div style={{minHeight:"100vh",background:"linear-gradient(180deg,#1a1a2e,#16213e)",padding:"14px",position:"relative"}}>
+
+      {/* OVERLAYS */}
+      {overlay && (
+        <div style={{position:"fixed",inset:0,background:overlay.type==="reset"?"rgba(100,0,0,0.92)":overlay.type==="alldown"?"rgba(80,40,0,0.92)":"rgba(0,0,0,0.88)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:100,textAlign:"center",padding:"20px"}}>
+          {overlay.type==="levelup" && <div>
+            <div style={{fontSize:"72px",marginBottom:"12px"}}>{overlay.emoji}</div>
+            <h2 style={{color:"#F39C12",fontSize:"30px",margin:"0 0 6px",fontWeight:"900"}}>TASON NOUSU!</h2>
+            <p style={{color:"white",fontSize:"20px",margin:"0 0 4px"}}>{overlay.playerName}</p>
+            <p style={{color:"rgba(255,255,255,0.6)",fontSize:"15px"}}>→ {overlay.levelName}</p>
+          </div>}
+          {overlay.type==="reset" && <div>
+            <div style={{fontSize:"72px",marginBottom:"12px"}}>💔</div>
+            <h2 style={{color:"#FF6B6B",fontSize:"28px",margin:"0 0 8px",fontWeight:"900"}}>PALATAAN ALKUUN!</h2>
+            <p style={{color:"white",fontSize:"16px"}}>{overlay.playerName}</p>
+          </div>}
+          {overlay.type==="alldown" && <div>
+            <div style={{fontSize:"72px",marginBottom:"12px"}}>💸</div>
+            <h2 style={{color:"#F39C12",fontSize:"28px",margin:"0 0 8px",fontWeight:"900"}}>HÄÄBUDJETTI YLITTYI!</h2>
+            <p style={{color:"white",fontSize:"15px"}}>Kaikki tippuvat yhden tason!</p>
+          </div>}
+          {overlay.type==="allup" && <div>
+            <div style={{fontSize:"72px",marginBottom:"12px"}}>🌹</div>
+            <h2 style={{color:"#27AE60",fontSize:"28px",margin:"0 0 8px",fontWeight:"900"}}>RAKKAUDEN AALTO!</h2>
+            <p style={{color:"white",fontSize:"15px"}}>Kaikki nousevat yhden tason!</p>
+          </div>}
+          {overlay.type==="familydown" && <div>
+            <div style={{fontSize:"72px",marginBottom:"12px"}}>👨‍👩‍👧</div>
+            <h2 style={{color:"#e67e22",fontSize:"28px",margin:"0 0 8px",fontWeight:"900"}}>SUKU HYLÄTTY!</h2>
+            <p style={{color:"white",fontSize:"16px"}}>{overlay.playerName}</p>
+            <p style={{color:"rgba(255,255,255,0.6)",fontSize:"13px",marginTop:"6px"}}>→ {overlay.levelName}</p>
+          </div>}
+        </div>
+      )}
+
+      {/* CHOOSE VICTIM */}
+      {chooseVictim && (
+        <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.92)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:100,textAlign:"center",padding:"20px"}}>
+          <div style={{maxWidth:"360px",width:"100%"}}>
+            <div style={{fontSize:"56px",marginBottom:"12px"}}>👀</div>
+            <h2 style={{color:"white",fontSize:"20px",margin:"0 0 20px",fontWeight:"900"}}>Kenen treffit menevät pieleen?</h2>
+            {players.map((p,i) => i !== currentPlayer && (
+              <button key={i} onClick={() => pickVictim(i)} style={{display:"block",width:"100%",padding:"14px",marginBottom:"10px",borderRadius:"12px",background:`${p.color}22`,border:`2px solid ${p.color}`,color:p.color,fontSize:"16px",fontWeight:"bold"}}>
+                {p.name} — {LEVELS[p.level].emoji} {LEVELS[p.level].name}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* HEADER */}
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"14px"}}>
+        <h2 style={{color:"#FF6B6B",margin:0,fontSize:"22px",fontWeight:"900"}}>💘 TREFFI</h2>
+        <button onClick={goToSetup} style={{background:"transparent",border:"1px solid rgba(255,255,255,0.12)",color:"rgba(255,255,255,0.35)",padding:"5px 10px",borderRadius:"8px",fontSize:"11px"}}>← Menu</button>
+      </div>
+
+      {/* PLAYERS */}
+      <div style={{display:"grid",gridTemplateColumns:`repeat(${playerCount},1fr)`,gap:"6px",marginBottom:"14px"}}>
+        {players.map((p,i) => (
+          <div key={i} style={{background:i===currentPlayer?`${p.color}15`:"rgba(255,255,255,0.02)",border:`2px solid ${i===currentPlayer?p.color:"rgba(255,255,255,0.05)"}`,borderRadius:"10px",padding:"8px",transition:"all 0.3s"}}>
+            <div style={{color:p.color,fontWeight:"bold",fontSize:"11px",marginBottom:"2px"}}>{i===currentPlayer?"▶ ":""}{p.name}{p.skipped?" 💤":""}</div>
+            <div style={{color:"rgba(255,255,255,0.4)",fontSize:"9px",marginBottom:"4px"}}>{LEVELS[p.level].emoji} {LEVELS[p.level].name}</div>
+            <div style={{display:"flex",gap:"2px"}}>
+              {LEVELS.map((_,li) => (
+                <div key={li} style={{flex:1,height:"4px",borderRadius:"2px",background:li<=p.level?"":li===p.level+1?`${p.color}40`:"rgba(255,255,255,0.06)",backgroundColor:li<=p.level?p.color:undefined}}/>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* CURRENT PLAYER */}
+      <div style={{background:`${cp.color}10`,border:`1px solid ${cp.color}30`,borderRadius:"12px",padding:"11px",marginBottom:"13px",textAlign:"center"}}>
+        <p style={{color:cp.color,margin:0,fontSize:"13px",fontWeight:"bold"}}>{cp.name} — sinun vuorosi</p>
+        <p style={{color:"rgba(255,255,255,0.45)",margin:"3px 0 0",fontSize:"11px"}}>{level.emoji} {level.name}: {level.desc}</p>
+      </div>
+
+      {/* CARD */}
+      {!currentCard ? (
+        <div onClick={drawCard} style={{background:"rgba(255,255,255,0.03)",border:"2px dashed rgba(255,255,255,0.12)",borderRadius:"18px",padding:"44px 20px",textAlign:"center",cursor:"pointer",marginBottom:"14px"}}>
+          <div style={{fontSize:"52px",marginBottom:"10px"}}>🃏</div>
+          <p style={{color:"rgba(255,255,255,0.6)",margin:0,fontSize:"16px",fontWeight:"bold"}}>Nosta kortti</p>
+          <p style={{color:"rgba(255,255,255,0.28)",margin:"4px 0 0",fontSize:"12px"}}>
+            {pendingFamilyCard ? "👨‍👩‍👧 Sukukortti odottaa!" : "Saat treffattavasi ominaisuuden"}
+          </p>
+        </div>
+      ) : (
+        <div style={{borderRadius:"18px",marginBottom:"13px",overflow:"hidden",border:`2px solid ${cfg.border}`,boxShadow:`0 8px 28px ${cfg.border}25`}}>
+          <div style={{background:cfg.bg,padding:"22px 20px",textAlign:"center"}}>
+            <div style={{display:"inline-flex",alignItems:"center",gap:"6px",background:cfg.border,color:"white",fontSize:"11px",padding:"3px 12px",borderRadius:"20px",marginBottom:"14px",fontWeight:"bold"}}>
+              {cfg.label}
+            </div>
+            <div style={{fontSize:"52px",marginBottom:"10px"}}>{currentCard.emoji}</div>
+            {currentCard.cardType === "family" && (
+              <div style={{color:cfg.border,fontSize:"13px",fontWeight:"bold",marginBottom:"6px"}}>
+                {currentCard.role}
+              </div>
+            )}
+            <p style={{color:"#1a1a2e",fontSize:"18px",fontWeight:"bold",margin:0,lineHeight:"1.4"}}>{currentCard.text}</p>
+            {currentCard.cardType !== "surprise" && (
+              <p style={{color:cfg.textColor,fontSize:"11px",marginTop:"10px",fontWeight:"bold"}}>
+                {currentCard.type==="dealbreaker"
+                  ? "🔥 Hyväksy = nouse taso (riski!) | Hylkää = viisas valinta"
+                  : currentCard.cardType==="family"
+                  ? "✅ Hyväksy = nouse taso | ❌ Hylkää = tippuu yhden tason"
+                  : "✅ Hyväksy = nouse taso | ❌ Hylkää = takaisin tasolle 0"}
+              </p>
+            )}
+          </div>
+
+          {currentCard.cardType === "surprise" ? (
+            !decisionMade ? (
+              <button onClick={() => makeDecision(true)} style={{width:"100%",padding:"16px",background:cfg.border,border:"none",color:"white",fontSize:"16px",fontWeight:"bold"}}>
+                🎲 OK — sovellaan!
+              </button>
+            ) : (
+              <div style={{padding:"16px",background:cfg.border,textAlign:"center",color:"white",fontWeight:"bold",fontSize:"15px"}}>
+                {currentCard.effect === "family_now" ? "🍼 Sukukortti tulossa..." : "🎲 Käänne sovellettu!"}
+              </div>
+            )
+          ) : !decisionMade ? (
+            <div style={{display:"flex"}}>
+              <button onClick={() => makeDecision(true)}  style={{flex:1,padding:"16px",background:"#28a745",border:"none",color:"white",fontSize:"16px",fontWeight:"bold",borderBottomLeftRadius:"16px"}}>✅ Hyväksyn</button>
+              <button onClick={() => makeDecision(false)} style={{flex:1,padding:"16px",background:"#dc3545",border:"none",color:"white",fontSize:"16px",fontWeight:"bold",borderBottomRightRadius:"16px"}}>❌ Hylkään</button>
+            </div>
+          ) : (
+            <div style={{padding:"16px",background:decisionMade==="accept"?"#28a745":"#dc3545",textAlign:"center",color:"white",fontWeight:"bold",fontSize:"16px"}}>
+              {decisionMade==="accept"?"✅ Hyväksytty!":"❌ Hylätty!"}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* LOG */}
+      {log.length > 0 && (
+        <div style={{background:"rgba(255,255,255,0.02)",borderRadius:"10px",padding:"10px",maxHeight:"100px",overflowY:"auto"}}>
+          {log.map((entry,i) => (
+            <p key={i} style={{color:i===0?"rgba(255,255,255,0.7)":"rgba(255,255,255,0.22)",fontSize:"11px",margin:"0 0 3px",lineHeight:"1.4"}}>{entry}</p>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>💘 Treffi</title>
+<title>Treffi-peli</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
@@ -735,7 +735,7 @@ function App() {
     <div style={{minHeight:"100vh",background:"linear-gradient(135deg,#1a1a2e,#16213e,#0f3460)",display:"flex",alignItems:"center",justifyContent:"center",padding:"20px"}}>
       <div style={{background:"rgba(255,255,255,0.05)",backdropFilter:"blur(20px)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"24px",padding:"36px",maxWidth:"440px",width:"100%",textAlign:"center"}}>
         <div style={{fontSize:"60px",marginBottom:"4px"}}>💘</div>
-        <h1 style={{color:"#FF6B6B",fontSize:"48px",fontWeight:"900",margin:"0 0 4px",letterSpacing:"-3px"}}>TREFFI</h1>
+        <h1 style={{color:"#FF6B6B",fontSize:"42px",fontWeight:"900",margin:"0 0 2px",letterSpacing:"-2px"}}>TREFFI-PELI</h1>
         <p style={{color:"rgba(255,255,255,0.35)",fontSize:"12px",marginBottom:"28px"}}>Rakkaus on uhkapeliä. Oletko valmis?</p>
         <p style={{color:"rgba(255,255,255,0.6)",marginBottom:"10px",fontSize:"13px"}}>Pelaajien määrä</p>
         <div style={{display:"flex",gap:"8px",justifyContent:"center",marginBottom:"20px"}}>
@@ -766,6 +766,39 @@ function App() {
             👶 Ensimmäinen perhe voittaa!
           </p>
         </div>
+        <div style={{marginTop:"14px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+          <span style={{color:"rgba(255,255,255,0.18)",fontSize:"10px"}}>v1.0</span>
+          <button onClick={() => setScreen("credits")} style={{background:"transparent",border:"none",color:"rgba(255,255,255,0.25)",fontSize:"10px",cursor:"pointer",padding:"4px 8px"}}>
+            Credits
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  // ── CREDITS ──────────────────────────────────────────────────────────────────
+  if (screen === "credits") return (
+    <div style={{minHeight:"100vh",background:"linear-gradient(135deg,#1a1a2e,#16213e,#0f3460)",display:"flex",alignItems:"center",justifyContent:"center",padding:"20px"}}>
+      <div style={{background:"rgba(255,255,255,0.05)",backdropFilter:"blur(20px)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"24px",padding:"40px",maxWidth:"400px",width:"100%",textAlign:"center"}}>
+        <div style={{fontSize:"48px",marginBottom:"12px"}}>💘</div>
+        <h2 style={{color:"#FF6B6B",fontSize:"22px",fontWeight:"900",margin:"0 0 28px",letterSpacing:"-1px"}}>Credits</h2>
+        <div style={{marginBottom:"24px"}}>
+          <p style={{color:"rgba(255,255,255,0.3)",fontSize:"11px",textTransform:"uppercase",letterSpacing:"2px",marginBottom:"10px"}}>Erityiset kiitokset</p>
+          <p style={{color:"#F39C12",fontSize:"26px",fontWeight:"900",margin:"0",letterSpacing:"-1px"}}>Nella</p>
+        </div>
+        <div style={{width:"40px",height:"1px",background:"rgba(255,255,255,0.1)",margin:"0 auto 24px"}}/>
+        <div style={{marginBottom:"32px"}}>
+          <p style={{color:"rgba(255,255,255,0.3)",fontSize:"11px",textTransform:"uppercase",letterSpacing:"2px",marginBottom:"12px"}}>Kiitokset</p>
+          <div style={{display:"flex",flexDirection:"column",gap:"8px"}}>
+            {["Ari","Sonja","Marianna"].map(name => (
+              <p key={name} style={{color:"rgba(255,255,255,0.65)",fontSize:"17px",fontWeight:"bold",margin:0}}>{name}</p>
+            ))}
+          </div>
+        </div>
+        <p style={{color:"rgba(255,255,255,0.15)",fontSize:"10px",marginBottom:"20px"}}>Treffi-peli v1.0</p>
+        <button onClick={() => setScreen("setup")} style={{padding:"12px 32px",borderRadius:"12px",background:"rgba(255,255,255,0.07)",border:"1px solid rgba(255,255,255,0.15)",color:"rgba(255,255,255,0.5)",fontSize:"14px",fontWeight:"bold",cursor:"pointer"}}>
+          ← Takaisin
+        </button>
       </div>
     </div>
   );
@@ -872,7 +905,7 @@ function App() {
 
       {/* HEADER */}
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"14px"}}>
-        <h2 style={{color:"#FF6B6B",margin:0,fontSize:"22px",fontWeight:"900"}}>💘 TREFFI</h2>
+        <h2 style={{color:"#FF6B6B",margin:0,fontSize:"18px",fontWeight:"900"}}>💘 TREFFI-PELI</h2>
         <button onClick={goToSetup} style={{background:"transparent",border:"1px solid rgba(255,255,255,0.12)",color:"rgba(255,255,255,0.35)",padding:"5px 10px",borderRadius:"8px",fontSize:"11px"}}>← Menu</button>
       </div>
 

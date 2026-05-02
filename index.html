@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>💘 Treffi</title>
+<title>Treffi-peli</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
@@ -23,12 +23,16 @@ const { useState } = React;
 
 // ─── TASOT ────────────────────────────────────────────────────────────────────
 const LEVELS = [
-  { id:0, name:"Ensitreffit",    emoji:"☕", color:"#FF6B6B", desc:"Kahvitreffit — tehdäänkö toinen kierros?" },
-  { id:1, name:"Seksi",          emoji:"🔥", color:"#FF4500", desc:"Kemiat toimii — uskallatko?" },
-  { id:2, name:"Yhteinen matka", emoji:"✈️", color:"#9B59B6", desc:"Kuukausi kahdestaan — selviääkö?" },
-  { id:3, name:"Yhteenmuutto",   emoji:"🏠", color:"#3498DB", desc:"Yhteinen koti — kuka saa kaukosäätimen?" },
-  { id:4, name:"Asunnon osto",   emoji:"🔑", color:"#27AE60", desc:"Yhteinen laina — vakava sitoumus" },
-  { id:5, name:"Perhe",          emoji:"👶", color:"#F39C12", desc:"Perustatte perheen — onnittelut!" },
+  { id:0, name:"Ensi kohtaaminen",         emoji:"👋", color:"#FF6B6B", desc:"Silmät kohtaavat — jotain erityistä tässä?" },
+  { id:1, name:"Ekat treffit",              emoji:"☕", color:"#FF8C69", desc:"Kahvitreffit — tehdäänkö toinen kierros?" },
+  { id:2, name:"Ensi suudelma",             emoji:"💋", color:"#E83E8C", desc:"Sydän lyö kovaa — uskallatko?" },
+  { id:3, name:"Kutsu kotiin",              emoji:"🚪", color:"#9B59B6", desc:"Ovet avautuvat — mennäänkö sisään?" },
+  { id:4, name:"Ensimmäinen seksi -hetki",  emoji:"🔥", color:"#FF4500", desc:"Kemiat toimii — astutaan seuraavaan askeleeseen" },
+  { id:5, name:"Viikonloppu yhdessä",       emoji:"🛏️", color:"#3498DB", desc:"Ensimmäinen viikonloppu kahdestaan — selviääkö?" },
+  { id:6, name:"Yhteinen lomamatka",        emoji:"✈️", color:"#1ABC9C", desc:"Matka kahdestaan — opitaan tuntemaan toinen" },
+  { id:7, name:"Esittely kavereille",       emoji:"🥳", color:"#27AE60", desc:"Tärkeät ihmiset tutustuvat — miten käy?" },
+  { id:8, name:"Muutto yhteen",             emoji:"🏠", color:"#F39C12", desc:"Yhteinen koti — kuka saa kaukosäätimen?" },
+  { id:9, name:"Perheen perustaminen",      emoji:"👶", color:"#E74C3C", desc:"Perustatte perheen — onnittelut!" },
 ];
 
 const PLAYER_COLORS = ["#FF6B6B","#3498DB","#27AE60","#F39C12"];
@@ -43,119 +47,201 @@ const TYPE_CONFIG = {
 
 // ─── NORMAALIKORTIT ───────────────────────────────────────────────────────────
 const BASE_TRAITS = [
-  {text:"Osaa kokata herkullisesti",type:"positive",emoji:"👨‍🍳"},
-  {text:"On erittäin empaattinen",type:"positive",emoji:"🤗"},
-  {text:"Kuuntelee aidosti",type:"positive",emoji:"👂"},
-  {text:"On humoristinen ja hauska",type:"positive",emoji:"😂"},
-  {text:"Rakastaa eläimiä",type:"positive",emoji:"🐾"},
-  {text:"On taloudellisesti vastuullinen",type:"positive",emoji:"💰"},
-  {text:"Kommunikoi avoimesti tunteistaan",type:"positive",emoji:"💌"},
-  {text:"Tukee sinua unelmissasi",type:"positive",emoji:"⭐"},
-  {text:"On rehellinen aina",type:"positive",emoji:"🤝"},
-  {text:"On rohkea ja seikkailunhaluinen",type:"positive",emoji:"🧗"},
-  {text:"On kärsivällinen ja rauhallinen",type:"positive",emoji:"🕊️"},
-  {text:"Muistaa tärkeät päivämäärät",type:"positive",emoji:"📅"},
-  {text:"Osaa pyytää anteeksi ja tarkoittaa sen",type:"positive",emoji:"🙏"},
-  {text:"On luova ja taiteellinen",type:"positive",emoji:"🎨"},
-  {text:"Pitää sinusta sellaisena kuin olet",type:"positive",emoji:"💜"},
-  {text:"On sosiaalinen ja helppo esitellä ystäville",type:"positive",emoji:"🥳"},
-  {text:"Haluaa kehittyä ihmisenä jatkuvasti",type:"positive",emoji:"📈"},
-  {text:"On kiltti ja kohtelias kaikkia kohtaan",type:"positive",emoji:"😊"},
-  {text:"On kunnianhimoinen mutta tasapainoinen",type:"positive",emoji:"🏆"},
-  {text:"Lukee paljon — on laaja-alainen",type:"positive",emoji:"📚"},
-  {text:"On hyvässä fyysisessä kunnossa",type:"positive",emoji:"💪"},
-  {text:"Tekee arjesta juhlan",type:"positive",emoji:"🌟"},
-  {text:"On lojaali ja uskollinen",type:"positive",emoji:"🛡️"},
-  {text:"On spontaani — keksii yllätyksiä",type:"positive",emoji:"🎁"},
-  {text:"Kunnioittaa rajojasi",type:"positive",emoji:"🚧"},
-  {text:"On hyvä kuuntelija kriisissä",type:"positive",emoji:"🫂"},
-  {text:"Ei pelkää sitoutua",type:"positive",emoji:"💍"},
-  {text:"Arvostaa perhettäsi",type:"positive",emoji:"👨‍👩‍👧"},
-  {text:"On tasapuolinen kotitöissä",type:"positive",emoji:"🧹"},
-  {text:"Osaa ottaa vastaan kritiikkiä",type:"positive",emoji:"🪞"},
-  {text:"On aidosti utelias maailmasta",type:"positive",emoji:"🔭"},
-  {text:"Pitää samanlaisesta elämänrytmistä",type:"positive",emoji:"⏰"},
-  {text:"Osaa nauraa itsellensä",type:"positive",emoji:"🤣"},
-  {text:"On mukava herätä viereen",type:"positive",emoji:"🌅"},
-  {text:"Osaa viettää aikaa hiljaa yhdessä",type:"positive",emoji:"🕯️"},
-  {text:"Arvostaa luontoa ja kestävyyttä",type:"positive",emoji:"🌿"},
-  {text:"On aina puolellasi vaikeissa tilanteissa",type:"positive",emoji:"⚓"},
-  {text:"Jakaa samanlaiset arvot",type:"positive",emoji:"🧭"},
-  {text:"On iloinen ja positiivinen elämänasenne",type:"positive",emoji:"☀️"},
-  {text:"On käytännöllinen ja kätevä kodin kanssa",type:"positive",emoji:"🔧"},
-  {text:"On sopivan itsevarma — ei ylimielinen",type:"positive",emoji:"😎"},
-  {text:"Jakaa kotityöt reilusti",type:"positive",emoji:"🧺"},
-  {text:"On avoin eri kulttuureja kohtaan",type:"positive",emoji:"🌍"},
-  {text:"Osaa sanoa suoraan mitä haluaa",type:"positive",emoji:"💬"},
-  {text:"Tekee pieniä rakkauden tekoja arjessa",type:"positive",emoji:"💐"},
-  {text:"On hyvä tanssija",type:"positive",emoji:"💃"},
-  {text:"Haluaa matkustaa ja kokea uutta",type:"positive",emoji:"🗺️"},
-  {text:"On avoin uusille kokemuksille",type:"positive",emoji:"🚪"},
-  {text:"Pitää sinun ystävistäsi",type:"positive",emoji:"🫶"},
-  {text:"On aina ajoissa",type:"positive",emoji:"⌚"},
-  {text:"Osaa puhua eläintenkieltä",type:"positive",emoji:"🐾"},
-  {text:"Nukkuu myöhään viikonloppuisin",type:"neutral",emoji:"😴"},
-  {text:"On introverttu — tarvitsee yksinaikaansa",type:"neutral",emoji:"🧘"},
-  {text:"Pelaa paljon videopelejä",type:"neutral",emoji:"🎮"},
-  {text:"On erittäin läheiset välit äitiinsä",type:"neutral",emoji:"👩‍👦"},
-  {text:"On allerginen kissoille",type:"neutral",emoji:"🤧"},
-  {text:"Rakastaa täydellistä järjestystä — kaikella paikka",type:"neutral",emoji:"🗂️"},
-  {text:"On täydellinen kaaos kotona",type:"neutral",emoji:"🌪️"},
-  {text:"Ei pidä juhlimisesta lainkaan",type:"neutral",emoji:"🚫"},
-  {text:"On kiireinen uraihminen — töissä usein myöhään",type:"neutral",emoji:"💼"},
-  {text:"On vegaani — ei kompromisseja ruoassa",type:"neutral",emoji:"🥗"},
-  {text:"Ei halua lapsia",type:"neutral",emoji:"🚫👶"},
-  {text:"On todella ujo uusissa tilanteissa",type:"neutral",emoji:"🫣"},
-  {text:"Haluaa asua maaseudulla",type:"neutral",emoji:"🌾"},
-  {text:"Haluaa asua isossa kaupungissa — ei kompromisseja",type:"neutral",emoji:"🏙️"},
-  {text:"On kiihkeä urheilufani — pelit ovat pyhiä",type:"neutral",emoji:"⚽"},
-  {text:"Käy kirkossa säännöllisesti — uskonto on tärkeä",type:"neutral",emoji:"⛪"},
-  {text:"Rakastaa riskejä — sijoittaa aggressiivisesti",type:"neutral",emoji:"📊"},
-  {text:"Nukkuu vain viisi tuntia — energia riittää silti",type:"neutral",emoji:"⚡"},
-  {text:"Herää viisi aamulla ja haluaa että sinäkin heräät",type:"neutral",emoji:"🐓"},
-  {text:"Kuuntelee musiikkia kovaa aina",type:"neutral",emoji:"🔊"},
-  {text:"Käy kuntosalilla joka päivä — se on prioriteetti",type:"neutral",emoji:"🏋️"},
-  {text:"Ei liiku lainkaan — sohvaperuna",type:"neutral",emoji:"🛋️"},
-  {text:"Juhlii kovaa viikonloppuisin",type:"neutral",emoji:"🍺"},
-  {text:"Ei juo lainkaan alkoholia",type:"neutral",emoji:"🚱"},
-  {text:"On ex-puolison kanssa edelleen hyvät välit",type:"neutral",emoji:"👋"},
-  {text:"Omistaa ison koiran joka nukkuu sängyssä",type:"neutral",emoji:"🐻"},
-  {text:"On todella tarkka rahasta — laskee eurot",type:"neutral",emoji:"🧾"},
-  {text:"Puhuu entisistä suhteistaan paljon",type:"neutral",emoji:"💭"},
-  {text:"Ei koskaan puhu tunteistaan",type:"neutral",emoji:"🪨"},
-  {text:"On isoja perhekokoontumisia joka viikonloppu",type:"neutral",emoji:"👨‍👩‍👧‍👦"},
-  {text:"Rakastaa lautapelejä — haluaa pelata aina",type:"neutral",emoji:"♟️"},
-  {text:"On erittäin kilpailuhenkinen — häviäminen ei onnistu",type:"neutral",emoji:"🥇"},
-  {text:"Rakastaa luksusta — haluaa aina parasta",type:"neutral",emoji:"💎"},
-  {text:"On minimalistinen — ei halua omistaa mitään ylimääräistä",type:"neutral",emoji:"⬜"},
-  {text:"Kerää tavaroita — koti on täynnä muistoja",type:"neutral",emoji:"🗄️"},
-  {text:"Rakastaa debatointia — väittelee kaikesta",type:"neutral",emoji:"⚔️"},
-  {text:"Välttelee konflikteja hinnalla millä hyvänsä",type:"neutral",emoji:"🕊️"},
-  {text:"On erittäin aktiivinen somessa",type:"neutral",emoji:"📸"},
-  {text:"Haluaa kolme tai enemmän lasta",type:"neutral",emoji:"👶👶👶"},
-  {text:"Syö ainoastaan pikaruokaa",type:"neutral",emoji:"🍔"},
-  {text:"Pitää kylmistä talviurheilulajeista",type:"neutral",emoji:"⛷️"},
-  {text:"Vihaaa kylmää — haluaa aina aurinkoon",type:"neutral",emoji:"🌴"},
-  {text:"Tekee töitä kotona — raja työn ja vapaa-ajan välillä epäselvä",type:"neutral",emoji:"💻"},
-  {text:"On erittäin sarkastinen — jotkut eivät pidä siitä",type:"neutral",emoji:"🙄"},
-  {text:"On suuri harrastusinto — harrastuksia on kymmeniä",type:"neutral",emoji:"🎯"},
-  {text:"Intohimoinen kalastaja",type:"neutral",emoji:"🎣"},
-  {text:"Osaa kaikki Shakespearen näytelmien vuorosanat",type:"neutral",emoji:"🎭"},
-  {text:"Valehtelee pienistä asioista jatkuvasti",type:"dealbreaker",emoji:"🤥"},
-  {text:"On erittäin mustasukkainen — kontrolloi liikkumistasi",type:"dealbreaker",emoji:"😠"},
-  {text:"Käyttäytyy huonosti tarjoilijoille",type:"dealbreaker",emoji:"😤"},
-  {text:"Räjähtää pienestä — arvaamaton temperamentti",type:"dealbreaker",emoji:"💥"},
-  {text:"On edelleen rakastunut ex-kumppaniinsa",type:"dealbreaker",emoji:"💔"},
-  {text:"Manipuloi sinua hiljaisella kohtelulla",type:"dealbreaker",emoji:"🕸️"},
-  {text:"On rasistinen tai syrjivä",type:"dealbreaker",emoji:"⛔"},
-  {text:"On pettänyt aiemmissa suhteissaan — ja selittelee sitä",type:"dealbreaker",emoji:"🐍"},
-  {text:"Pelaa rahapeleillä pakonomaisesti",type:"dealbreaker",emoji:"🎲"},
-  {text:"Käyttää sinua taloudellisesti hyväksi",type:"dealbreaker",emoji:"🪝"},
-  {text:"On henkisesti julma — nöyryyttää sinua",type:"dealbreaker",emoji:"🔪"},
-  {text:"Puhuu sinusta pahaa muille selän takana",type:"dealbreaker",emoji:"🗣️"},
-  {text:"Ottaa huumeita säännöllisesti",type:"dealbreaker",emoji:"💊"},
-  {text:"Eristää sinut ystävistäsi vähitellen",type:"dealbreaker",emoji:"🕸️"},
-  {text:"On fyysisesti uhkaava riidoissa",type:"dealbreaker",emoji:"🚨"},
+  {text:"Osaan kokata herkullisesti",type:"positive",emoji:"👨‍🍳"},
+  {text:"Olen erittäin empaattinen",type:"positive",emoji:"🤗"},
+  {text:"Kuuntelen aidosti kun kerrot päivästäsi",type:"positive",emoji:"👂"},
+  {text:"Olen humoristinen ja osaan hassutella",type:"positive",emoji:"😂"},
+  {text:"Rakastan eläimiä",type:"positive",emoji:"🐾"},
+  {text:"Olen taloudellisesti vastuullinen",type:"positive",emoji:"💰"},
+  {text:"Kommunikoin avoimesti tunteistani",type:"positive",emoji:"💌"},
+  {text:"Tuen sinua kaikissa unelmissasi",type:"positive",emoji:"⭐"},
+  {text:"Olen aina rehellinen",type:"positive",emoji:"🤝"},
+  {text:"Olen rohkea ja seikkailunhaluinen",type:"positive",emoji:"🧗"},
+  {text:"Olen kärsivällinen myös hankalissa tilanteissa",type:"positive",emoji:"🕊️"},
+  {text:"Muistan tärkeät päivämäärät",type:"positive",emoji:"📅"},
+  {text:"Osaan pyytää anteeksi ja tarkoitan sen",type:"positive",emoji:"🙏"},
+  {text:"Olen luova ja taiteellinen",type:"positive",emoji:"🎨"},
+  {text:"Pidän sinusta juuri sellaisena kuin olet",type:"positive",emoji:"💜"},
+  {text:"Olen sosiaalinen — ystäväsi tulevat tykkäämään minusta",type:"positive",emoji:"🥳"},
+  {text:"Haluan kehittyä ihmisenä jatkuvasti",type:"positive",emoji:"📈"},
+  {text:"Olen kiltti ja kohtelias kaikkia kohtaan",type:"positive",emoji:"😊"},
+  {text:"Olen kunnianhimoinen mutta tasapainoinen",type:"positive",emoji:"🏆"},
+  {text:"Luen paljon — olen laaja-alainen",type:"positive",emoji:"📚"},
+  {text:"Olen hyvässä fyysisessä kunnossa",type:"positive",emoji:"💪"},
+  {text:"Teen arjesta juhlan pienillä eleillä",type:"positive",emoji:"🌟"},
+  {text:"Olen lojaali ja uskollinen",type:"positive",emoji:"🛡️"},
+  {text:"Olen spontaani — keksin yllätyksiä",type:"positive",emoji:"🎁"},
+  {text:"Kunnioitan rajojasi aina",type:"positive",emoji:"🚧"},
+  {text:"Olen hyvä kuuntelija myös kriisissä",type:"positive",emoji:"🫂"},
+  {text:"En pelkää sitoutua",type:"positive",emoji:"💍"},
+  {text:"Arvostan perhettäsi kuin omaani",type:"positive",emoji:"👨‍👩‍👧"},
+  {text:"Jaan kotityöt tasapuolisesti",type:"positive",emoji:"🧹"},
+  {text:"Osaan ottaa vastaan kritiikkiä rakentavasti",type:"positive",emoji:"🪞"},
+  {text:"Olen aidosti utelias maailmasta",type:"positive",emoji:"🔭"},
+  {text:"Pidän samanlaisesta elämänrytmistä",type:"positive",emoji:"⏰"},
+  {text:"Osaan nauraa itselleni",type:"positive",emoji:"🤣"},
+  {text:"Olen mukava herätä viereen joka aamu",type:"positive",emoji:"🌅"},
+  {text:"Osaan viettää aikaa hiljaa yhdessä",type:"positive",emoji:"🕯️"},
+  {text:"Arvostan luontoa ja kestävää elämäntapaa",type:"positive",emoji:"🌿"},
+  {text:"Olen aina puolellasi vaikeissa tilanteissa",type:"positive",emoji:"⚓"},
+  {text:"Jaan samat arvot kanssasi",type:"positive",emoji:"🧭"},
+  {text:"Minulla on positiivinen elämänasenne",type:"positive",emoji:"☀️"},
+  {text:"Olen käytännöllinen ja kätevä kodin kanssa",type:"positive",emoji:"🔧"},
+  {text:"Olen sopivan itsevarma — en ylimielinen",type:"positive",emoji:"😎"},
+  {text:"Jaan kotityöt reilusti ilman muistuttelua",type:"positive",emoji:"🧺"},
+  {text:"Olen avoin eri kulttuureita kohtaan",type:"positive",emoji:"🌍"},
+  {text:"Osaan sanoa suoraan mitä haluan",type:"positive",emoji:"💬"},
+  {text:"Teen pieniä rakkauden tekoja arjessa",type:"positive",emoji:"💐"},
+  {text:"Olen hyvä tanssija",type:"positive",emoji:"💃"},
+  {text:"Haluan matkustaa ja kokea uutta kanssasi",type:"positive",emoji:"🗺️"},
+  {text:"Olen avoin uusille kokemuksille",type:"positive",emoji:"🌊"},
+  {text:"Pidän ystävistäsi",type:"positive",emoji:"🫶"},
+  {text:"Olen aina ajoissa",type:"positive",emoji:"⌚"},
+  {text:"Olen emotionaalisesti tasapainoinen",type:"positive",emoji:"🌱"},
+  {text:"Teen sinulle aamukahvin ilman pyytämistä",type:"positive",emoji:"☕"},
+  {text:"Kuuntelen pitkänkin tarinan loppuun",type:"positive",emoji:"🎧"},
+  {text:"Otan vastuun omista virheistäni",type:"positive",emoji:"🙋"},
+  {text:"Olen loistava lasten kanssa",type:"positive",emoji:"👶"},
+  {text:"Osaan tehdä päätöksiä paineen alla",type:"positive",emoji:"🧠"},
+  {text:"Olen avulias ilman odotusta vastapalveluksesta",type:"positive",emoji:"🤲"},
+  {text:"Pidän huolen omasta mielenterveydestäni",type:"positive",emoji:"🧘"},
+  {text:"Annan sinulle omaa tilaa kun tarvitset",type:"positive",emoji:"🌬️"},
+  {text:"Olen innostunut kokeilemaan uusia harrastuksia kanssasi",type:"positive",emoji:"🏄"},
+  {text:"Vien sinut hienoihin ravintoloihin",type:"positive",emoji:"🍽️"},
+  {text:"En laita puhelinta pöytään treffeillä",type:"positive",emoji:"📵"},
+  {text:"Olen hyvä kertomaan vitsejä",type:"positive",emoji:"😄"},
+  {text:"Innostun pienistäkin asioista",type:"positive",emoji:"🌸"},
+  {text:"Olen loistava suunnittelemaan lomamatkoja",type:"positive",emoji:"✈️"},
+  {text:"Arvostan sinun yksilöllisyyttäsi",type:"positive",emoji:"🌈"},
+  {text:"Osaan antaa lahjoja jotka todella ilahduttavat",type:"positive",emoji:"🎀"},
+  {text:"Pidän kädestä julkisesti",type:"positive",emoji:"🫱"},
+  {text:"Olen hyvä hieromaan hartioita",type:"positive",emoji:"💆"},
+  {text:"Pidän sateisista sunnuntaiaamupäivistä kotona",type:"positive",emoji:"☔"},
+  {text:"Juhlistamme pienetkin voitot yhdessä",type:"positive",emoji:"🎉"},
+  {text:"Olen järjestelmällinen ilman pakkomielteisyyttä",type:"positive",emoji:"📋"},
+  {text:"Osaan kokata monista eri keittiöistä",type:"positive",emoji:"🌮"},
+  {text:"Olen paras ystäväsi kumppanisi lisäksi",type:"positive",emoji:"🫂"},
+  {text:"Puhun sinusta vain hyvää muille",type:"positive",emoji:"💬"},
+  {text:"Kysyn mielipidettäsi ennen isoja päätöksiä",type:"positive",emoji:"🤔"},
+  {text:"Olen hyvä sovittelemaan riitoja",type:"positive",emoji:"🕊️"},
+  {text:"Herään ennen sinua ja teen aamupalan",type:"positive",emoji:"🍳"},
+  {text:"Olen innoissani yhteisistä projekteista",type:"positive",emoji:"🛠️"},
+  {text:"Otan sinut aina mukaan kaveriporukkaani",type:"positive",emoji:"🎊"},
+  {text:"Kuuntelen ilman että alan heti neuvomaan",type:"positive",emoji:"🤫"},
+  {text:"Olen aidosti kiinnostunut siitä mikä sinulle on tärkeää",type:"positive",emoji:"💝"},
+  {text:"Pidän aina lupaukset",type:"positive",emoji:"🎯"},
+  {text:"Olen ylpeä sinusta muiden edessä",type:"positive",emoji:"🌟"},
+  {text:"Osaan leipoa",type:"positive",emoji:"🍰"},
+  {text:"Olen loistava kuuntelija myös puhelimessa",type:"positive",emoji:"📞"},
+  {text:"Rakastan sinua enemmän joka päivä",type:"positive",emoji:"💘"},
+  {text:"Nukun myöhään viikonloppuisin",type:"neutral",emoji:"😴"},
+  {text:"Olen introverttu — tarvitsen yksinaikaani",type:"neutral",emoji:"🧘"},
+  {text:"Pelaan paljon videopelejä",type:"neutral",emoji:"🎮"},
+  {text:"Minulla on erittäin läheiset välit äitiini",type:"neutral",emoji:"👩‍👦"},
+  {text:"Olen allerginen kissoille",type:"neutral",emoji:"🤧"},
+  {text:"Rakastan täydellistä järjestystä — kaikella on paikkansa",type:"neutral",emoji:"🗂️"},
+  {text:"Kotini on täydellinen kaaos",type:"neutral",emoji:"🌪️"},
+  {text:"En pidä juhlimisesta lainkaan",type:"neutral",emoji:"🚫"},
+  {text:"Olen kiireinen uraihminen — olen töissä usein myöhään",type:"neutral",emoji:"💼"},
+  {text:"Olen vegaani — ei kompromisseja ruoassa",type:"neutral",emoji:"🥗"},
+  {text:"En halua lapsia",type:"neutral",emoji:"🚫👶"},
+  {text:"Olen todella ujo uusissa tilanteissa",type:"neutral",emoji:"🫣"},
+  {text:"Haluan asua maaseudulla",type:"neutral",emoji:"🌾"},
+  {text:"Haluan asua isossa kaupungissa — ei kompromisseja",type:"neutral",emoji:"🏙️"},
+  {text:"Olen kiihkeä urheilufani — pelit ovat pyhiä",type:"neutral",emoji:"⚽"},
+  {text:"Käyn kirkossa säännöllisesti — uskonto on minulle tärkeä",type:"neutral",emoji:"⛪"},
+  {text:"Rakastan riskejä — sijoitan aggressiivisesti",type:"neutral",emoji:"📊"},
+  {text:"Nukun vain viisi tuntia — energia riittää silti",type:"neutral",emoji:"⚡"},
+  {text:"Herään viisi aamulla ja toivon sinunkin heräävän",type:"neutral",emoji:"🐓"},
+  {text:"Kuuntelen musiikkia aina kovalla",type:"neutral",emoji:"🔊"},
+  {text:"Käyn kuntosalilla joka päivä — se on prioriteettini",type:"neutral",emoji:"🏋️"},
+  {text:"En liiku lainkaan — olen sohvaperuna",type:"neutral",emoji:"🛋️"},
+  {text:"Juhlin kovaa viikonloppuisin",type:"neutral",emoji:"🍺"},
+  {text:"En juo lainkaan alkoholia",type:"neutral",emoji:"🚱"},
+  {text:"Olen edelleen hyvissä väleissä ex-puolisoni kanssa",type:"neutral",emoji:"👋"},
+  {text:"Omistan ison koiran joka nukkuu sängyssä",type:"neutral",emoji:"🐻"},
+  {text:"Olen todella tarkka rahasta — lasken eurot",type:"neutral",emoji:"🧾"},
+  {text:"Puhun entisistä suhteistani paljon",type:"neutral",emoji:"💭"},
+  {text:"En koskaan puhu tunteistani",type:"neutral",emoji:"🪨"},
+  {text:"Meillä on isoja perhekokoontumisia joka viikonloppu",type:"neutral",emoji:"👨‍👩‍👧‍👦"},
+  {text:"Rakastan lautapelejä — haluan pelata aina",type:"neutral",emoji:"♟️"},
+  {text:"Olen erittäin kilpailuhenkinen — häviäminen on minulle vaikeaa",type:"neutral",emoji:"🥇"},
+  {text:"Rakastan luksusta — haluan aina parasta",type:"neutral",emoji:"💎"},
+  {text:"Olen minimalistinen — en halua omistaa mitään ylimääräistä",type:"neutral",emoji:"⬜"},
+  {text:"Kerään tavaroita — kotini on täynnä muistoja",type:"neutral",emoji:"🗄️"},
+  {text:"Rakastan väittelyä — väittelen kaikesta",type:"neutral",emoji:"⚔️"},
+  {text:"Vältelen konflikteja hinnalla millä hyvänsä",type:"neutral",emoji:"🕊️"},
+  {text:"Olen erittäin aktiivinen somessa",type:"neutral",emoji:"📸"},
+  {text:"Haluan kolme tai enemmän lasta",type:"neutral",emoji:"👶👶👶"},
+  {text:"Syön ainoastaan pikaruokaa",type:"neutral",emoji:"🍔"},
+  {text:"Pidän talviurheilulajeista",type:"neutral",emoji:"⛷️"},
+  {text:"Vihaan kylmää — haluan aina aurinkoon",type:"neutral",emoji:"🌴"},
+  {text:"Teen töitä kotona — raja työn ja vapaa-ajan välillä on epäselvä",type:"neutral",emoji:"💻"},
+  {text:"Olen erittäin sarkastinen — kaikki eivät pidä siitä",type:"neutral",emoji:"🙄"},
+  {text:"Minulla on kymmeniä harrastuksia",type:"neutral",emoji:"🎯"},
+  {text:"Olen intohimoinen kalastaja",type:"neutral",emoji:"🎣"},
+  {text:"Osaan kaikki Shakespearen näytelmien vuorosanat",type:"neutral",emoji:"🎭"},
+  {text:"Olen yöihminen — olen parhaimmillani yöllä",type:"neutral",emoji:"🦉"},
+  {text:"En osaa laittaa ruokaa lainkaan",type:"neutral",emoji:"🥡"},
+  {text:"Käytän puhelintani paljon myös treffeillä",type:"neutral",emoji:"📱"},
+  {text:"Olen hyvin uskonnollinen",type:"neutral",emoji:"🙏"},
+  {text:"Olen poliittisesti erittäin aktiivinen",type:"neutral",emoji:"🗳️"},
+  {text:"Poltan — mutta vain ulkona",type:"neutral",emoji:"🚬"},
+  {text:"Olen allerginen koirille",type:"neutral",emoji:"🐶"},
+  {text:"Nukun aina ikkunat auki — myös talvella",type:"neutral",emoji:"🥶"},
+  {text:"En syö lihaa enkä koskaan tule syömään",type:"neutral",emoji:"🌱"},
+  {text:"Minulla on neljä kissaa",type:"neutral",emoji:"🐱"},
+  {text:"Olen erittäin perhekeskeinen — perhe tulee aina ensin",type:"neutral",emoji:"👨‍👩‍👧"},
+  {text:"Haluan muuttaa ulkomaille pysyvästi",type:"neutral",emoji:"🌍"},
+  {text:"Olen toipumassa — en juo alkoholia enää",type:"neutral",emoji:"💪"},
+  {text:"Hermoilen helposti uusissa tilanteissa",type:"neutral",emoji:"😰"},
+  {text:"Olen hyvin suorapuheinen — jotkut pitävät sitä töykeänä",type:"neutral",emoji:"🗣️"},
+  {text:"Minulla on kolme autoa — autoilu on intohimoni",type:"neutral",emoji:"🚗"},
+  {text:"Olen erittäin tarkka hygieniasta",type:"neutral",emoji:"🧼"},
+  {text:"En osaa olla hiljaa — täytän hiljaisuuden aina puheella",type:"neutral",emoji:"💬"},
+  {text:"Unelmoin omasta maatilasta",type:"neutral",emoji:"🚜"},
+  {text:"Olen innokas matkustaja — olen kotona harvoin",type:"neutral",emoji:"🌏"},
+  {text:"Olen hyvin säästäväinen — jopa liian säästäväinen",type:"neutral",emoji:"💸"},
+  {text:"Rakastan extreme-lajeja — riskit eivät pelota minua",type:"neutral",emoji:"🪂"},
+  {text:"Olen herkkä kritiikille — otan sen henkilökohtaisesti",type:"neutral",emoji:"😢"},
+  {text:"En pidä romanttisista eleistä — käytännöllisyys on minulle tärkeämpää",type:"neutral",emoji:"🔨"},
+  {text:"Olen ylpeä perinnöstäni ja kulttuuristani",type:"neutral",emoji:"🏛️"},
+  {text:"Kuuntelen podcasteja kaikessa hiljaisuudessa",type:"neutral",emoji:"🎙️"},
+  {text:"Lähden töihin ulkomaille vuodeksi pian",type:"neutral",emoji:"✈️"},
+  {text:"Olen artisti — tuloni ovat epäsäännölliset",type:"neutral",emoji:"🎨"},
+  {text:"Olen todella nopea syömään — olen aina ensin valmis",type:"neutral",emoji:"🍽️"},
+  {text:"Tarvitsen paljon yksinäistä aikaa ladatakseni akkuja",type:"neutral",emoji:"🔋"},
+  {text:"Soitan kitaraa joka ilta — se on minulle meditaatiota",type:"neutral",emoji:"🎸"},
+  {text:"Valehtelen pienistä asioista jatkuvasti",type:"dealbreaker",emoji:"🤥"},
+  {text:"Olen erittäin mustasukkainen — kontrolloin liikkumistasi",type:"dealbreaker",emoji:"😠"},
+  {text:"Käyttäydyn huonosti tarjoilijoille",type:"dealbreaker",emoji:"😤"},
+  {text:"Räjähdän pienestä — temperamenttini on arvaamaton",type:"dealbreaker",emoji:"💥"},
+  {text:"Olen edelleen rakastunut ex-kumppaniini",type:"dealbreaker",emoji:"💔"},
+  {text:"Manipuloin hiljaisella kohtelulla kun olen vihainen",type:"dealbreaker",emoji:"🕸️"},
+  {text:"Olen rasistinen tai syrjivä ihmisiä kohtaan",type:"dealbreaker",emoji:"⛔"},
+  {text:"Olen pettänyt aiemmissa suhteissani — ja selittelen sitä",type:"dealbreaker",emoji:"🐍"},
+  {text:"Pelaan rahapeleillä pakonomaisesti",type:"dealbreaker",emoji:"🎲"},
+  {text:"Käytän sinua taloudellisesti hyväksi",type:"dealbreaker",emoji:"🪝"},
+  {text:"Olen henkisesti julma — nöyryytän sinua",type:"dealbreaker",emoji:"🔪"},
+  {text:"Puhun sinusta pahaa muille selän takana",type:"dealbreaker",emoji:"🗣️"},
+  {text:"Otan huumeita säännöllisesti",type:"dealbreaker",emoji:"💊"},
+  {text:"Eristän sinut ystävistäsi vähitellen",type:"dealbreaker",emoji:"🕸️"},
+  {text:"Olen fyysisesti uhkaava riidoissa",type:"dealbreaker",emoji:"🚨"},
+  {text:"Kontrolloin kaikkia yhteyksiäsi muihin ihmisiin",type:"dealbreaker",emoji:"📵"},
+  {text:"Valehtelen rahatilanteestani — minulla on piilotettuja velkoja",type:"dealbreaker",emoji:"💸"},
+  {text:"En ota vastuuta mistään — kaikki on aina muiden vika",type:"dealbreaker",emoji:"🙈"},
+  {text:"Käytän alkoholia liiaksi joka viikonloppu",type:"dealbreaker",emoji:"🍸"},
+  {text:"Loukkaan sinua julkisesti — pidän sitä hauskana",type:"dealbreaker",emoji:"😈"},
+  {text:"Lähetän ex-kumppanilleni viestejä salaa",type:"dealbreaker",emoji:"📩"},
+  {text:"En kunnioita rajojasi vaikka olet kertonut niistä",type:"dealbreaker",emoji:"🚫"},
+  {text:"Kerron sinulle mitä saat tehdä ja kenen kanssa",type:"dealbreaker",emoji:"🔗"},
+  {text:"Syyllistän sinua kaikista ongelmistamme",type:"dealbreaker",emoji:"😤"},
+  {text:"Olen narsistinen — maailma pyörii minun ympärilläni",type:"dealbreaker",emoji:"🌀"},
+  {text:"Kieltäydyn hakemasta apua vaikka tarvitsisin sitä",type:"dealbreaker",emoji:"🚪"},
+  {text:"En pidä lupauksia — sovitut asiat unohtuvat",type:"dealbreaker",emoji:"🤷"},
+  {text:"Pidän sinusta etäällä — en anna sinun lähestyä oikeasti",type:"dealbreaker",emoji:"🧊"},
+  {text:"Käyttäydyn eri tavalla kahden kesken kuin muiden nähden",type:"dealbreaker",emoji:"🎭"},
+  {text:"En arvosta sinun aikaasi — myöhästyn aina eikä se haittaa",type:"dealbreaker",emoji:"🕐"},
 ];
 
 // ─── YLLÄTYSKÄÄNTEET ──────────────────────────────────────────────────────────
@@ -268,106 +354,6 @@ function shuffle(arr) {
   return a;
 }
 
-// Convert 3rd person card text to 1st person for partner voice
-function toFirstPerson(text) {
-  return text
-    .replace(/^On erittäin /i,   "Olen erittäin ")
-    .replace(/^On hyvä /i,       "Olen hyvä ")
-    .replace(/^On hyvässä /i,    "Olen hyvässä ")
-    .replace(/^On kärsivällinen/i,"Olen kärsivällinen")
-    .replace(/^On kiltti/i,      "Olen kiltti")
-    .replace(/^On kiireinen/i,   "Olen kiireinen")
-    .replace(/^On kunnianhimoinen/i,"Olen kunnianhimoinen")
-    .replace(/^On lojaali/i,     "Olen lojaali")
-    .replace(/^On luova/i,       "Olen luova")
-    .replace(/^On mukava/i,      "Olen mukava")
-    .replace(/^On narsistinen/i, "Olen narsistinen")
-    .replace(/^On rehellinen/i,  "Olen rehellinen")
-    .replace(/^On rohkea/i,      "Olen rohkea")
-    .replace(/^On sosiaalinen/i, "Olen sosiaalinen")
-    .replace(/^On sopivan/i,     "Olen sopivan")
-    .replace(/^On spontaani/i,   "Olen spontaani")
-    .replace(/^On taloudellisesti/i,"Olen taloudellisesti")
-    .replace(/^On todella/i,     "Olen todella")
-    .replace(/^On täydellinen/i, "Olen täydellinen")
-    .replace(/^On vegaani/i,     "Olen vegaani")
-    .replace(/^On introverttu/i, "Olen introverttu")
-    .replace(/^On allerginen/i,  "Olen allerginen")
-    .replace(/^On addiktoitunut/i,"Olen addiktoitunut")
-    .replace(/^On avoin/i,       "Olen avoin")
-    .replace(/^On aidosti/i,     "Olen aidosti")
-    .replace(/^On aggressiivinen/i,"Olen aggressiivinen")
-    .replace(/^On ex/i,          "Olen ex")
-    .replace(/^On fyysisesti/i,  "Olen fyysisesti")
-    .replace(/^On henkisesti/i,  "Olen henkisesti")
-    .replace(/^On iloinen/i,     "Olen iloinen")
-    .replace(/^On kiihkeä/i,     "Olen kiihkeä")
-    .replace(/^On kateellinen/i, "Olen kateellinen")
-    .replace(/^On käytännöllinen/i,"Olen käytännöllinen")
-    .replace(/^On minimalistinen/i,"Olen minimalistinen")
-    .replace(/^On pettänyt/i,    "Olen pettänyt")
-    .replace(/^On poliittisesti/i,"Olen poliittisesti")
-    .replace(/^On rasistinen/i,  "Olen rasistinen")
-    .replace(/^On seksuaalisesti/i,"Olen seksuaalisesti")
-    .replace(/^On sensitiivinen/i,"Olen sensitiivinen")
-    .replace(/^On sarkastinen/i, "Olen sarkastinen")
-    .replace(/^On terve/i,       "Olen terve")
-    .replace(/^On totaalinen/i,  "Olen totaalinen")
-    .replace(/^On ujo/i,         "Olen ujo")
-    .replace(/^On yksityisyyden/i,"Olen yksityisyyden")
-    .replace(/^On yötyhmä/i,     "Olen yötyhmä")
-    .replace(/^On edelleen/i,    "Olen edelleen")
-    .replace(/^On täysin/i,      "Olen täysin")
-    .replace(/^On aina/i,        "Olen aina")
-    .replace(/^On /i,            "Olen ")
-    .replace(/^Ei halua/i,       "En halua")
-    .replace(/^Ei pidä/i,        "En pidä")
-    .replace(/^Ei katso/i,       "En katso")
-    .replace(/^Ei koskaan/i,     "En koskaan")
-    .replace(/^Ei juo/i,         "En juo")
-    .replace(/^Ei liiku/i,       "En liiku")
-    .replace(/^Ei omista/i,      "En omista")
-    .replace(/^Ei usko/i,        "En usko")
-    .replace(/^Ei välitä/i,      "En välitä")
-    .replace(/^Ei /i,            "En ")
-    .replace(/^Osaa /i,          "Osaan ")
-    .replace(/^Pelaa /i,         "Pelaan ")
-    .replace(/^Puhuu /i,         "Puhun ")
-    .replace(/^Rakastaa /i,      "Rakastan ")
-    .replace(/^Haluaa /i,        "Haluan ")
-    .replace(/^Käy /i,           "Käyn ")
-    .replace(/^Käyttää /i,       "Käytän ")
-    .replace(/^Käyttäytyy /i,    "Käyttäydyn ")
-    .replace(/^Kerää /i,         "Kerään ")
-    .replace(/^Kuuntelee /i,     "Kuuntelen ")
-    .replace(/^Lähettää /i,      "Lähetän ")
-    .replace(/^Lukee /i,         "Luen ")
-    .replace(/^Muistaa /i,       "Muistan ")
-    .replace(/^Muuttaa /i,       "Muutan ")
-    .replace(/^Nukkuu /i,        "Nukun ")
-    .replace(/^Omistaa /i,       "Omistan ")
-    .replace(/^Ottaa /i,         "Otan ")
-    .replace(/^Pitää /i,         "Pidän ")
-    .replace(/^Pyörtää /i,       "Pyörrän ")
-    .replace(/^Räjähtää /i,      "Räjähdän ")
-    .replace(/^Syö /i,           "Syön ")
-    .replace(/^Syyttää /i,       "Syytän ")
-    .replace(/^Tekee /i,         "Teen ")
-    .replace(/^Tarvitsee /i,     "Tarvitsen ")
-    .replace(/^Tukee /i,         "Tuen ")
-    .replace(/^Välttelee /i,     "Vältelen ")
-    .replace(/^Valehtelee /i,    "Valehtelen ")
-    .replace(/^Herää /i,         "Herään ")
-    .replace(/^Hermostuu /i,     "Hermostun ")
-    .replace(/^Jakaa /i,         "Jaan ")
-    .replace(/^Juhlii /i,        "Juhlii ")
-    .replace(/^Kunnioittaa /i,   "Kunnioitan ")
-    .replace(/^Kommunikoi /i,    "Kommunikoin ")
-    .replace(/^Kannustaa /i,     "Kannustan ")
-    .replace(/^Arvostaa /i,      "Arvostan ")
-    .replace(/^Eristää /i,       "Eristän ")
-    .replace(/^Halveksii /i,     "Halveksin ");
-}
 
 // Finnish female name endings and common names for gender detection
 const FEMALE_NAMES = ["anna","maria","sofia","emma","julia","laura","sara","emilia","aino","helmi",
@@ -454,6 +440,7 @@ function App() {
   const [playerCount, setPlayerCount]     = useState(2);
   const [playerNames, setPlayerNames]     = useState(getSaved);
   const [players, setPlayers]             = useState([]);
+  const [partnerPrefs, setPartnerPrefs]   = useState(["","","",""]);
   const [currentPlayer, setCurrentPlayer] = useState(0);
   const [deck, setDeck]                   = useState([]);
   const [familyDeck, setFamilyDeck]       = useState([]);
@@ -471,6 +458,7 @@ function App() {
     setScreen("setup"); setPlayers([]); setDeck([]); setFamilyDeck([]);
     setCurrentCard(null); setLog([]); setWinner(null); setDecisionMade(null);
     setOverlay(null); setSkipNext(false); setChooseVictim(false); setPendingFamilyCard(false);
+    setPartnerPrefs(["","","",""]);
   }
 
   function launchGame() {
@@ -485,13 +473,18 @@ function App() {
     setCurrentPlayer(0); setCurrentCard(null); setLog([]); setWinner(null);
     setDecisionMade(null); setOverlay(null); setSkipNext(false);
     setChooseVictim(false); setPendingFamilyCard(false);
-    setScreen("game");
-    setTimeout(() => speak(`Peli alkaa! ${newPlayers[0].name}, sinun vuorosi. Olet tasolla ${LEVELS[0].name}.`), 300);
+    setScreen("preferences");
   }
 
-  // Sukukortti laukeaa kun taso >= 2 (Seksi läpäisty) tai pakolla
+  function startGame(pls) {
+    const p = pls || players;
+    setScreen("game");
+    setTimeout(() => speak(`Peli alkaa! ${p[0].name}, sinun vuorosi. Olet tasolla ${LEVELS[0].name}.`), 300);
+  }
+
+  // Sukukortti laukeaa kun taso >= 4 (Ensimmäinen seksi -hetki läpäisty) tai pakolla
   function shouldDrawFamily(player, forced) {
-    return forced || (player.level >= 2 && Math.random() < 0.3);
+    return forced || (player.level >= 4 && Math.random() < 0.3);
   }
 
   function drawCard() {
@@ -524,7 +517,7 @@ function App() {
       speak(`Yllätyskäänne! ${card.text}`);
     } else {
       setCurrentSpeaker(players[currentPlayer]?.name || '');
-    speak(`Olen ${toFirstPerson(card.text).charAt(0).toLowerCase() + toFirstPerson(card.text).slice(1)}`);
+    speak(card.text);
     }
   }
 
@@ -725,10 +718,10 @@ function App() {
 
   // ── SETUP ────────────────────────────────────────────────────────────────────
   if (screen === "setup") return (
-    <div style={{minHeight:"100vh",background:"linear-gradient(135deg,#1a1a2e,#16213e,#0f3460)",display:"flex",alignItems:"center",justifyContent:"center",padding:"20px"}}>
-      <div style={{background:"rgba(255,255,255,0.05)",backdropFilter:"blur(20px)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"24px",padding:"36px",maxWidth:"440px",width:"100%",textAlign:"center"}}>
+    <div style={{minHeight:"100vh",background:"linear-gradient(135deg,#1a1a2e,#16213e,#0f3460)",padding:"20px 20px 40px"}}>
+      <div style={{background:"rgba(255,255,255,0.05)",backdropFilter:"blur(20px)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"24px",padding:"36px",maxWidth:"440px",width:"100%",textAlign:"center",margin:"0 auto",marginTop:"max(20px, 5vh)"}}>
         <div style={{fontSize:"60px",marginBottom:"4px"}}>💘</div>
-        <h1 style={{color:"#FF6B6B",fontSize:"48px",fontWeight:"900",margin:"0 0 4px",letterSpacing:"-3px"}}>TREFFI</h1>
+        <h1 style={{color:"#FF6B6B",fontSize:"42px",fontWeight:"900",margin:"0 0 2px",letterSpacing:"-2px"}}>TREFFI-PELI</h1>
         <p style={{color:"rgba(255,255,255,0.35)",fontSize:"12px",marginBottom:"28px"}}>Rakkaus on uhkapeliä. Oletko valmis?</p>
         <p style={{color:"rgba(255,255,255,0.6)",marginBottom:"10px",fontSize:"13px"}}>Pelaajien määrä</p>
         <div style={{display:"flex",gap:"8px",justifyContent:"center",marginBottom:"20px"}}>
@@ -750,14 +743,76 @@ function App() {
         <div style={{marginTop:"18px",background:"rgba(255,255,255,0.03)",borderRadius:"12px",padding:"14px",textAlign:"left"}}>
           <p style={{color:"rgba(255,255,255,0.35)",fontSize:"11px",lineHeight:"2"}}>
             <strong style={{color:"rgba(255,255,255,0.55)"}}>Säännöt:</strong><br/>
-            🃏 Nosta kortti → hyväksy tai hylkää<br/>
-            ✅ Hyväksy → nouse seuraavalle tasolle<br/>
-            ❌ Hylkää → PALATAAN TASOLLE 0<br/>
-            ⚠️ Dealbreaker + hyväksy → TAKAISIN ALKUUN<br/>
-            🎲 Yllätyskäänteet sekoittavat kaiken<br/>
-            👨‍👩‍👧 Sukukortit tulevat Seksi-tason jälkeen<br/>
-            👶 Ensimmäinen perhe voittaa!
+            🃏 Nosta kortti — se kertoo kumppanisi ominaisuuden<br/>
+            ✅ Hyväksy → etenette seuraavalle tasolle<br/>
+            ❌ Hylkää → palataan takaisin alkuun<br/>
+            💘 Tavoitteena kulkea suhteen polku alusta loppuun
           </p>
+        </div>
+        <div style={{marginTop:"14px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+          <span style={{color:"rgba(255,255,255,0.18)",fontSize:"10px"}}>v1.2</span>
+          <button onClick={() => setScreen("credits")} style={{background:"transparent",border:"none",color:"rgba(255,107,107,0.55)",fontSize:"12px",cursor:"pointer",padding:"4px 8px",textDecoration:"underline",textDecorationColor:"rgba(255,107,107,0.3)"}}>
+            Credits 💘
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  // ── CREDITS ──────────────────────────────────────────────────────────────────
+  if (screen === "credits") return (
+    <div style={{minHeight:"100vh",background:"linear-gradient(135deg,#1a1a2e,#16213e,#0f3460)",display:"flex",alignItems:"center",justifyContent:"center",padding:"20px"}}>
+      <div style={{background:"rgba(255,255,255,0.05)",backdropFilter:"blur(20px)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"24px",padding:"40px",maxWidth:"400px",width:"100%",textAlign:"center"}}>
+        <div style={{fontSize:"48px",marginBottom:"12px"}}>💘</div>
+        <h2 style={{color:"#FF6B6B",fontSize:"22px",fontWeight:"900",margin:"0 0 28px",letterSpacing:"-1px"}}>Credits</h2>
+        <div style={{marginBottom:"24px"}}>
+          <p style={{color:"rgba(255,255,255,0.3)",fontSize:"11px",textTransform:"uppercase",letterSpacing:"2px",marginBottom:"10px"}}>Erityiset kiitokset</p>
+          <p style={{color:"#F39C12",fontSize:"26px",fontWeight:"900",margin:"0",letterSpacing:"-1px"}}>Nella</p>
+        </div>
+        <div style={{width:"40px",height:"1px",background:"rgba(255,255,255,0.1)",margin:"0 auto 24px"}}/>
+        <div style={{marginBottom:"32px"}}>
+          <p style={{color:"rgba(255,255,255,0.3)",fontSize:"11px",textTransform:"uppercase",letterSpacing:"2px",marginBottom:"12px"}}>Kiitokset</p>
+          <div style={{display:"flex",flexDirection:"column",gap:"8px"}}>
+            {["Ari","Sonja","Marianna"].map(name => (
+              <p key={name} style={{color:"rgba(255,255,255,0.65)",fontSize:"17px",fontWeight:"bold",margin:0}}>{name}</p>
+            ))}
+          </div>
+        </div>
+        <p style={{color:"rgba(255,255,255,0.15)",fontSize:"10px",marginBottom:"20px"}}>Treffi-peli v1.2</p>
+        <button onClick={() => setScreen("setup")} style={{padding:"12px 32px",borderRadius:"12px",background:"rgba(255,255,255,0.07)",border:"1px solid rgba(255,255,255,0.15)",color:"rgba(255,255,255,0.5)",fontSize:"14px",fontWeight:"bold",cursor:"pointer"}}>
+          ← Takaisin
+        </button>
+      </div>
+    </div>
+  );
+
+  // ── PREFERENCES ──────────────────────────────────────────────────────────────
+  if (screen === "preferences") return (
+    <div style={{minHeight:"100vh",background:"linear-gradient(135deg,#1a1a2e,#16213e,#0f3460)",display:"flex",alignItems:"center",justifyContent:"center",padding:"20px"}}>
+      <div style={{background:"rgba(255,255,255,0.05)",backdropFilter:"blur(20px)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"24px",padding:"36px",maxWidth:"440px",width:"100%",textAlign:"center"}}>
+        <div style={{fontSize:"52px",marginBottom:"8px"}}>💭</div>
+        <h2 style={{color:"#FF6B6B",fontSize:"24px",fontWeight:"900",margin:"0 0 6px",letterSpacing:"-1px"}}>Unelmakumppani</h2>
+        <p style={{color:"rgba(255,255,255,0.45)",fontSize:"12px",marginBottom:"24px"}}>Mitä etsit kumppanilta? Voit myös ohittaa tämän.</p>
+        <div style={{marginBottom:"24px",textAlign:"left"}}>
+          {players.map((p, i) => (
+            <div key={i} style={{marginBottom:"12px"}}>
+              <label style={{color:p.color,fontSize:"12px",fontWeight:"bold",display:"block",marginBottom:"5px"}}>{p.name}</label>
+              <input
+                value={partnerPrefs[i] || ""}
+                onChange={e => { const n=[...partnerPrefs]; n[i]=e.target.value; setPartnerPrefs(n); }}
+                placeholder="Etsin kumppania joka..."
+                style={{display:"block",width:"100%",padding:"10px 14px",borderRadius:"10px",border:`2px solid ${p.color}40`,background:"rgba(255,255,255,0.04)",color:"rgba(255,255,255,0.8)",fontSize:"14px",outline:"none"}}
+              />
+            </div>
+          ))}
+        </div>
+        <div style={{display:"flex",gap:"10px"}}>
+          <button onClick={() => startGame()} style={{flex:1,padding:"13px",borderRadius:"12px",background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.15)",color:"rgba(255,255,255,0.5)",fontSize:"14px",fontWeight:"bold"}}>
+            Ohita
+          </button>
+          <button onClick={() => startGame()} style={{flex:2,padding:"13px",borderRadius:"12px",background:"linear-gradient(135deg,#FF6B6B,#FF4500)",border:"none",color:"white",fontSize:"15px",fontWeight:"bold"}}>
+            Aloita peli 💘
+          </button>
         </div>
       </div>
     </div>
@@ -833,7 +888,7 @@ function App() {
 
       {/* HEADER */}
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"14px"}}>
-        <h2 style={{color:"#FF6B6B",margin:0,fontSize:"22px",fontWeight:"900"}}>💘 TREFFI</h2>
+        <h2 style={{color:"#FF6B6B",margin:0,fontSize:"18px",fontWeight:"900"}}>💘 TREFFI-PELI</h2>
         <button onClick={goToSetup} style={{background:"transparent",border:"1px solid rgba(255,255,255,0.12)",color:"rgba(255,255,255,0.35)",padding:"5px 10px",borderRadius:"8px",fontSize:"11px"}}>← Menu</button>
       </div>
 
@@ -856,6 +911,9 @@ function App() {
       <div style={{background:`${cp.color}10`,border:`1px solid ${cp.color}30`,borderRadius:"12px",padding:"11px",marginBottom:"13px",textAlign:"center"}}>
         <p style={{color:cp.color,margin:0,fontSize:"13px",fontWeight:"bold"}}>{cp.name} — sinun vuorosi</p>
         <p style={{color:"rgba(255,255,255,0.45)",margin:"3px 0 0",fontSize:"11px"}}>{level.emoji} {level.name}: {level.desc}</p>
+        {partnerPrefs[currentPlayer] && (
+          <p style={{color:"rgba(255,255,255,0.28)",margin:"5px 0 0",fontSize:"10px",fontStyle:"italic"}}>💭 "{partnerPrefs[currentPlayer]}"</p>
+        )}
       </div>
 
       {/* CARD */}

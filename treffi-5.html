@@ -454,6 +454,7 @@ function App() {
   const [playerCount, setPlayerCount]     = useState(2);
   const [playerNames, setPlayerNames]     = useState(getSaved);
   const [players, setPlayers]             = useState([]);
+  const [partnerPrefs, setPartnerPrefs]   = useState(["","","",""]);
   const [currentPlayer, setCurrentPlayer] = useState(0);
   const [deck, setDeck]                   = useState([]);
   const [familyDeck, setFamilyDeck]       = useState([]);
@@ -471,6 +472,7 @@ function App() {
     setScreen("setup"); setPlayers([]); setDeck([]); setFamilyDeck([]);
     setCurrentCard(null); setLog([]); setWinner(null); setDecisionMade(null);
     setOverlay(null); setSkipNext(false); setChooseVictim(false); setPendingFamilyCard(false);
+    setPartnerPrefs(["","","",""]);
   }
 
   function launchGame() {
@@ -485,8 +487,13 @@ function App() {
     setCurrentPlayer(0); setCurrentCard(null); setLog([]); setWinner(null);
     setDecisionMade(null); setOverlay(null); setSkipNext(false);
     setChooseVictim(false); setPendingFamilyCard(false);
+    setScreen("preferences");
+  }
+
+  function startGame(pls) {
+    const p = pls || players;
     setScreen("game");
-    setTimeout(() => speak(`Peli alkaa! ${newPlayers[0].name}, sinun vuorosi. Olet tasolla ${LEVELS[0].name}.`), 300);
+    setTimeout(() => speak(`Peli alkaa! ${p[0].name}, sinun vuorosi. Olet tasolla ${LEVELS[0].name}.`), 300);
   }
 
   // Sukukortti laukeaa kun taso >= 2 (Seksi läpäisty) tai pakolla
@@ -763,6 +770,38 @@ function App() {
     </div>
   );
 
+  // ── PREFERENCES ──────────────────────────────────────────────────────────────
+  if (screen === "preferences") return (
+    <div style={{minHeight:"100vh",background:"linear-gradient(135deg,#1a1a2e,#16213e,#0f3460)",display:"flex",alignItems:"center",justifyContent:"center",padding:"20px"}}>
+      <div style={{background:"rgba(255,255,255,0.05)",backdropFilter:"blur(20px)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"24px",padding:"36px",maxWidth:"440px",width:"100%",textAlign:"center"}}>
+        <div style={{fontSize:"52px",marginBottom:"8px"}}>💭</div>
+        <h2 style={{color:"#FF6B6B",fontSize:"24px",fontWeight:"900",margin:"0 0 6px",letterSpacing:"-1px"}}>Unelmakumppani</h2>
+        <p style={{color:"rgba(255,255,255,0.45)",fontSize:"12px",marginBottom:"24px"}}>Mitä etsit kumppanilta? Voit myös ohittaa tämän.</p>
+        <div style={{marginBottom:"24px",textAlign:"left"}}>
+          {players.map((p, i) => (
+            <div key={i} style={{marginBottom:"12px"}}>
+              <label style={{color:p.color,fontSize:"12px",fontWeight:"bold",display:"block",marginBottom:"5px"}}>{p.name}</label>
+              <input
+                value={partnerPrefs[i] || ""}
+                onChange={e => { const n=[...partnerPrefs]; n[i]=e.target.value; setPartnerPrefs(n); }}
+                placeholder="Etsin kumppania joka..."
+                style={{display:"block",width:"100%",padding:"10px 14px",borderRadius:"10px",border:`2px solid ${p.color}40`,background:"rgba(255,255,255,0.04)",color:"rgba(255,255,255,0.8)",fontSize:"14px",outline:"none"}}
+              />
+            </div>
+          ))}
+        </div>
+        <div style={{display:"flex",gap:"10px"}}>
+          <button onClick={() => startGame()} style={{flex:1,padding:"13px",borderRadius:"12px",background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.15)",color:"rgba(255,255,255,0.5)",fontSize:"14px",fontWeight:"bold"}}>
+            Ohita
+          </button>
+          <button onClick={() => startGame()} style={{flex:2,padding:"13px",borderRadius:"12px",background:"linear-gradient(135deg,#FF6B6B,#FF4500)",border:"none",color:"white",fontSize:"15px",fontWeight:"bold"}}>
+            Aloita peli 💘
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
   // ── WIN ──────────────────────────────────────────────────────────────────────
   if (screen === "win") return (
     <div style={{minHeight:"100vh",background:"linear-gradient(135deg,#f9c74f,#f8961e,#f3722c)",display:"flex",alignItems:"center",justifyContent:"center",textAlign:"center",padding:"20px"}}>
@@ -856,6 +895,9 @@ function App() {
       <div style={{background:`${cp.color}10`,border:`1px solid ${cp.color}30`,borderRadius:"12px",padding:"11px",marginBottom:"13px",textAlign:"center"}}>
         <p style={{color:cp.color,margin:0,fontSize:"13px",fontWeight:"bold"}}>{cp.name} — sinun vuorosi</p>
         <p style={{color:"rgba(255,255,255,0.45)",margin:"3px 0 0",fontSize:"11px"}}>{level.emoji} {level.name}: {level.desc}</p>
+        {partnerPrefs[currentPlayer] && (
+          <p style={{color:"rgba(255,255,255,0.28)",margin:"5px 0 0",fontSize:"10px",fontStyle:"italic"}}>💭 "{partnerPrefs[currentPlayer]}"</p>
+        )}
       </div>
 
       {/* CARD */}
